@@ -1,0 +1,3 @@
+C:/Users/niran/Desktop/FindX/build/CMakeFiles/findx.dir
+C:/Users/niran/Desktop/FindX/build/CMakeFiles/edit_cache.dir
+C:/Users/niran/Desktop/FindX/build/CMakeFiles/rebuild_cache.dir
