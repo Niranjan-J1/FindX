@@ -176,6 +176,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/reader.obj: src/reader.cpp.obj
+.PHONY : src/reader.obj
+
+# target to build an object file
+src/reader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.obj
+.PHONY : src/reader.cpp.obj
+
+src/reader.i: src/reader.cpp.i
+.PHONY : src/reader.i
+
+# target to preprocess a source file
+src/reader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.i
+.PHONY : src/reader.cpp.i
+
+src/reader.s: src/reader.cpp.s
+.PHONY : src/reader.s
+
+# target to generate assembly for a file
+src/reader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.s
+.PHONY : src/reader.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -191,6 +215,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/reader.obj
+	@echo ... src/reader.i
+	@echo ... src/reader.s
 .PHONY : help
 
 

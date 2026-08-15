@@ -1,6 +1,6 @@
-CMakeFiles/findx.dir/src/main.cpp.obj: \
- C:\Users\niran\Desktop\FindX\src\main.cpp \
- C:\Users\niran\Desktop\FindX\src\crawler.h \
+CMakeFiles/findx.dir/src/reader.cpp.obj: \
+ C:\Users\niran\Desktop\FindX\src\reader.cpp \
+ C:\Users\niran\Desktop\FindX\src\reader.h \
  C:/msys64/mingw64/include/c++/15.2.0/filesystem \
  C:/msys64/mingw64/include/c++/15.2.0/bits/requires_hosted.h \
  C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++config.h \
@@ -175,13 +175,9 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:/msys64/mingw64/include/c++/15.2.0/ext/aligned_buffer.h \
  C:/msys64/mingw64/include/c++/15.2.0/bits/fs_dir.h \
  C:/msys64/mingw64/include/c++/15.2.0/bits/fs_ops.h \
- C:/msys64/mingw64/include/c++/15.2.0/vector \
- C:/msys64/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
- C:/msys64/mingw64/include/c++/15.2.0/bits/stl_vector.h \
- C:/msys64/mingw64/include/c++/15.2.0/bits/stl_bvector.h \
- C:/msys64/mingw64/include/c++/15.2.0/bits/vector.tcc \
- C:\Users\niran\Desktop\FindX\src\reader.h \
  C:/msys64/mingw64/include/c++/15.2.0/optional \
  C:/msys64/mingw64/include/c++/15.2.0/bits/enable_special_members.h \
- C:/msys64/mingw64/include/c++/15.2.0/iostream \
- C:/msys64/mingw64/include/c++/15.2.0/chrono
+ C:/msys64/mingw64/include/c++/15.2.0/fstream \
+ C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/basic_file.h \
+ C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++io.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/fstream.tcc

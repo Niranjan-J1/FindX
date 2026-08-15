@@ -8,4 +8,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(findx
     src/main.cpp
     src/crawler.cpp
+    src/reader.cpp
 )
