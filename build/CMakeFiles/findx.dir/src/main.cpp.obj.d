@@ -183,5 +183,14 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:\Users\niran\Desktop\FindX\src\reader.h \
  C:/msys64/mingw64/include/c++/15.2.0/optional \
  C:/msys64/mingw64/include/c++/15.2.0/bits/enable_special_members.h \
+ C:\Users\niran\Desktop\FindX\src\index.h \
+ C:/msys64/mingw64/include/c++/15.2.0/unordered_map \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_map.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/hashtable.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/hashtable_policy.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/node_handle.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/erase_if.h \
  C:/msys64/mingw64/include/c++/15.2.0/iostream \
+ C:/msys64/mingw64/include/c++/15.2.0/array \
+ C:/msys64/mingw64/include/c++/15.2.0/compare \
  C:/msys64/mingw64/include/c++/15.2.0/chrono

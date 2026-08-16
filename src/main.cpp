@@ -1,8 +1,12 @@
 #include "crawler.h"
 #include "reader.h"
+#include "index.h"
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <array>
+#include <cctype>
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -24,6 +28,22 @@ std::string format_time(std::filesystem::file_time_type ftime) {
     return oss.str();
 }
 
+bool has_indexable_extension(const std::filesystem::path& path) {
+    static const std::array<std::string, 4> allowed = { ".txt", ".md", ".cpp", ".h" };
+
+    std::string ext = path.extension().string();
+    for (auto& c : ext) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+
+    for (const auto& a : allowed) {
+        if (ext == a) {
+            return true;
+        }
+    }
+    return false;
+}
+
 } // namespace
 
 int main(int argc, char* argv[]) {
@@ -42,29 +62,61 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::size_t read_ok = 0;
+    std::vector<Document> documents;
+    InvertedIndex index;
+
+    std::size_t skipped_extension = 0;
     std::size_t read_failed = 0;
 
     for (const auto& entry : entries) {
+        if (!has_indexable_extension(entry.path)) {
+            ++skipped_extension;
+            continue;
+        }
+
         std::error_code read_ec;
         auto doc = read_file(entry.path, read_ec);
 
-        std::cout << entry.path.string()
-                   << " | " << entry.size << " bytes"
-                   << " | " << format_time(entry.last_write_time);
-
-        if (doc) {
-            std::cout << " | read ok (" << doc->content.size() << " bytes content)\n";
-            ++read_ok;
-        } else {
-            std::cout << " | read FAILED: " << read_ec.message() << "\n";
+        if (!doc) {
+            std::cerr << "Failed to read " << entry.path << ": " << read_ec.message() << "\n";
             ++read_failed;
+            continue;
         }
+
+        DocID id = documents.size();
+        index.add_document(id, doc->content);
+        documents.push_back(std::move(*doc));
     }
 
-    std::cout << "\nTotal files: " << entries.size()
-               << " | read ok: " << read_ok
+    std::cout << "Indexed " << documents.size() << " documents"
+               << " | skipped (extension): " << skipped_extension
                << " | read failed: " << read_failed << "\n";
+
+    std::cout << "\nEnter a term to search (blank line to quit):\n";
+
+    std::string query;
+    while (true) {
+        std::cout << "> ";
+        if (!std::getline(std::cin, query) || query.empty()) {
+            break;
+        }
+
+        for (auto& c : query) {
+            c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        }
+
+        const auto* results = index.lookup(query);
+        if (!results) {
+            std::cout << "No matches.\n";
+            continue;
+        }
+
+        std::cout << "Found in " << results->size() << " document(s):\n";
+        for (const auto& [id, count] : *results) {
+            std::cout << "  " << documents[id].path.string()
+                       << " (" << count << " occurrence" << (count == 1 ? "" : "s") << ")\n";
+        }
+    }
 
     return 0;
 }

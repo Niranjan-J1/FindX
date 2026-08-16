@@ -9,4 +9,6 @@ add_executable(findx
     src/main.cpp
     src/crawler.cpp
     src/reader.cpp
+    src/tokenizer.cpp
+    src/index.cpp
 )

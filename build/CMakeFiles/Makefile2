@@ -84,12 +84,12 @@ clean: CMakeFiles/findx.dir/clean
 CMakeFiles/findx.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=1,2,3,4 "Built target findx"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=1,2,3,4,5,6 "Built target findx"
 .PHONY : CMakeFiles/findx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/findx.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\niran\Desktop\FindX\build\CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\niran\Desktop\FindX\build\CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/findx.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\niran\Desktop\FindX\build\CMakeFiles 0
 .PHONY : CMakeFiles/findx.dir/rule
@@ -101,7 +101,7 @@ findx: CMakeFiles/findx.dir/rule
 # codegen rule for target.
 CMakeFiles/findx.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target findx"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=1,2,3,4,5,6 "Finished codegen for target findx"
 .PHONY : CMakeFiles/findx.dir/codegen
 
 # clean rule for target.

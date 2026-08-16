@@ -152,6 +152,30 @@ src/crawler.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/crawler.cpp.s
 .PHONY : src/crawler.cpp.s
 
+src/index.obj: src/index.cpp.obj
+.PHONY : src/index.obj
+
+# target to build an object file
+src/index.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/index.cpp.obj
+.PHONY : src/index.cpp.obj
+
+src/index.i: src/index.cpp.i
+.PHONY : src/index.i
+
+# target to preprocess a source file
+src/index.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/index.cpp.i
+.PHONY : src/index.cpp.i
+
+src/index.s: src/index.cpp.s
+.PHONY : src/index.s
+
+# target to generate assembly for a file
+src/index.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/index.cpp.s
+.PHONY : src/index.cpp.s
+
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
 
@@ -200,6 +224,30 @@ src/reader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.s
 .PHONY : src/reader.cpp.s
 
+src/tokenizer.obj: src/tokenizer.cpp.obj
+.PHONY : src/tokenizer.obj
+
+# target to build an object file
+src/tokenizer.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/tokenizer.cpp.obj
+.PHONY : src/tokenizer.cpp.obj
+
+src/tokenizer.i: src/tokenizer.cpp.i
+.PHONY : src/tokenizer.i
+
+# target to preprocess a source file
+src/tokenizer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/tokenizer.cpp.i
+.PHONY : src/tokenizer.cpp.i
+
+src/tokenizer.s: src/tokenizer.cpp.s
+.PHONY : src/tokenizer.s
+
+# target to generate assembly for a file
+src/tokenizer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/tokenizer.cpp.s
+.PHONY : src/tokenizer.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -212,12 +260,18 @@ help:
 	@echo ... src/crawler.obj
 	@echo ... src/crawler.i
 	@echo ... src/crawler.s
+	@echo ... src/index.obj
+	@echo ... src/index.i
+	@echo ... src/index.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
 	@echo ... src/reader.obj
 	@echo ... src/reader.i
 	@echo ... src/reader.s
+	@echo ... src/tokenizer.obj
+	@echo ... src/tokenizer.i
+	@echo ... src/tokenizer.s
 .PHONY : help
 
 
