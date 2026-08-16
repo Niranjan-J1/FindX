@@ -1,6 +1,7 @@
 #include "crawler.h"
 #include "reader.h"
 #include "index.h"
+#include "tokenizer.h"
 
 #include <iostream>
 #include <string>
@@ -101,11 +102,14 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        for (auto& c : query) {
-            c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        std::vector<std::string> query_tokens = tokenize(query);
+        if (query_tokens.empty()) {
+            std::cout << "No valid search term.\n";
+            continue;
         }
 
-        const auto* results = index.lookup(query);
+        const std::string& term = query_tokens.front();
+        const auto* results = index.lookup(term);
         if (!results) {
             std::cout << "No matches.\n";
             continue;

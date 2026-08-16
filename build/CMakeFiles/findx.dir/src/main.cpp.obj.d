@@ -190,6 +190,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:/msys64/mingw64/include/c++/15.2.0/bits/hashtable_policy.h \
  C:/msys64/mingw64/include/c++/15.2.0/bits/node_handle.h \
  C:/msys64/mingw64/include/c++/15.2.0/bits/erase_if.h \
+ C:\Users\niran\Desktop\FindX\src\tokenizer.h \
  C:/msys64/mingw64/include/c++/15.2.0/iostream \
  C:/msys64/mingw64/include/c++/15.2.0/array \
  C:/msys64/mingw64/include/c++/15.2.0/compare \
