@@ -2,6 +2,7 @@
 #include "reader.h"
 #include "index.h"
 #include "tokenizer.h"
+#include "ranker.h"
 
 #include <iostream>
 #include <string>
@@ -93,7 +94,7 @@ int main(int argc, char* argv[]) {
                << " | skipped (extension): " << skipped_extension
                << " | read failed: " << read_failed << "\n";
 
-    std::cout << "\nEnter a term to search (blank line to quit):\n";
+    std::cout << "\nEnter a search query (blank line to quit):\n";
 
     std::string query;
     while (true) {
@@ -108,17 +109,16 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        const std::string& term = query_tokens.front();
-        const auto* results = index.lookup(term);
-        if (!results) {
+        std::vector<ScoredDocument> ranked = rank_bm25(index, query_tokens);
+        if (ranked.empty()) {
             std::cout << "No matches.\n";
             continue;
         }
 
-        std::cout << "Found in " << results->size() << " document(s):\n";
-        for (const auto& [id, count] : *results) {
-            std::cout << "  " << documents[id].path.string()
-                       << " (" << count << " occurrence" << (count == 1 ? "" : "s") << ")\n";
+        std::cout << "Found " << ranked.size() << " document(s), ranked by relevance:\n";
+        for (const auto& sd : ranked) {
+            std::cout << "  " << documents[sd.id].path.string()
+                       << " (score: " << std::fixed << std::setprecision(3) << sd.score << ")\n";
         }
     }
 

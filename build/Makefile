@@ -200,6 +200,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/ranker.obj: src/ranker.cpp.obj
+.PHONY : src/ranker.obj
+
+# target to build an object file
+src/ranker.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ranker.cpp.obj
+.PHONY : src/ranker.cpp.obj
+
+src/ranker.i: src/ranker.cpp.i
+.PHONY : src/ranker.i
+
+# target to preprocess a source file
+src/ranker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ranker.cpp.i
+.PHONY : src/ranker.cpp.i
+
+src/ranker.s: src/ranker.cpp.s
+.PHONY : src/ranker.s
+
+# target to generate assembly for a file
+src/ranker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ranker.cpp.s
+.PHONY : src/ranker.cpp.s
+
 src/reader.obj: src/reader.cpp.obj
 .PHONY : src/reader.obj
 
@@ -266,6 +290,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/ranker.obj
+	@echo ... src/ranker.i
+	@echo ... src/ranker.s
 	@echo ... src/reader.obj
 	@echo ... src/reader.i
 	@echo ... src/reader.s

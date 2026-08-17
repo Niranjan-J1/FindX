@@ -507,6 +507,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj
  C:/Users/niran/Desktop/FindX/src/crawler.h
  C:/Users/niran/Desktop/FindX/src/index.h
  C:/Users/niran/Desktop/FindX/src/reader.h
+ C:/Users/niran/Desktop/FindX/src/tokenizer.h
 
 CMakeFiles/findx.dir/src/reader.cpp.obj
  C:/Users/niran/Desktop/FindX/src/reader.cpp

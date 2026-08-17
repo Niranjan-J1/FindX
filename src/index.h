@@ -11,6 +11,11 @@ public:
     void add_document(DocID id, const std::string& content);
     const std::unordered_map<DocID, int>* lookup(const std::string& term) const;
 
+    std::size_t document_count() const;
+    std::size_t document_length(DocID id) const;
+    std::size_t total_token_count() const;
+
 private:
     std::unordered_map<std::string, std::unordered_map<DocID, int>> index_;
+    std::unordered_map<DocID, std::size_t> doc_lengths_;
 };

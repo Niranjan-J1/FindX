@@ -503,7 +503,8 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/syslimits.h \
   C:/Users/niran/Desktop/FindX/src/crawler.h \
   C:/Users/niran/Desktop/FindX/src/index.h \
-  C:/Users/niran/Desktop/FindX/src/reader.h
+  C:/Users/niran/Desktop/FindX/src/reader.h \
+  C:/Users/niran/Desktop/FindX/src/tokenizer.h
 
 CMakeFiles/findx.dir/src/reader.cpp.obj: C:/Users/niran/Desktop/FindX/src/reader.cpp \
   C:/msys64/mingw64/include/_mingw.h \

@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/findx.dir/src/index.cpp.obj.d"
   "CMakeFiles/findx.dir/src/main.cpp.obj"
   "CMakeFiles/findx.dir/src/main.cpp.obj.d"
+  "CMakeFiles/findx.dir/src/ranker.cpp.obj"
+  "CMakeFiles/findx.dir/src/ranker.cpp.obj.d"
   "CMakeFiles/findx.dir/src/reader.cpp.obj"
   "CMakeFiles/findx.dir/src/reader.cpp.obj.d"
   "CMakeFiles/findx.dir/src/tokenizer.cpp.obj"

@@ -11,4 +11,5 @@ add_executable(findx
     src/reader.cpp
     src/tokenizer.cpp
     src/index.cpp
+    src/ranker.cpp
 )
