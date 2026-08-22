@@ -3,6 +3,7 @@
 #include "index.h"
 #include "tokenizer.h"
 #include "ranker.h"
+#include "storage.h"
 
 #include <iostream>
 #include <string>
@@ -12,22 +13,18 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-#include <sstream>
+#include <cstdint>
+#include <filesystem>
 
 namespace {
 
-std::string format_time(std::filesystem::file_time_type ftime) {
+std::int64_t to_epoch_seconds(std::filesystem::file_time_type ftime) {
     using namespace std::chrono;
 
     auto sctp = time_point_cast<system_clock::duration>(
         ftime - std::filesystem::file_time_type::clock::now() + system_clock::now());
 
-    std::time_t tt = system_clock::to_time_t(sctp);
-    std::tm* tm = std::localtime(&tt);
-
-    std::ostringstream oss;
-    oss << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
-    return oss.str();
+    return static_cast<std::int64_t>(system_clock::to_time_t(sctp));
 }
 
 bool has_indexable_extension(const std::filesystem::path& path) {
@@ -46,16 +43,7 @@ bool has_indexable_extension(const std::filesystem::path& path) {
     return false;
 }
 
-} // namespace
-
-int main(int argc, char* argv[]) {
-    if (argc < 3 || std::string(argv[1]) != "index") {
-        std::cerr << "Usage: findx index <path>\n";
-        return 1;
-    }
-
-    std::filesystem::path root = argv[2];
-
+int run_index(const std::filesystem::path& root, const std::filesystem::path& db_path) {
     std::error_code ec;
     std::vector<FileEntry> entries = crawl(root, ec);
 
@@ -64,7 +52,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::vector<Document> documents;
+    std::vector<DocumentRecord> documents;
     InvertedIndex index;
 
     std::size_t skipped_extension = 0;
@@ -87,40 +75,98 @@ int main(int argc, char* argv[]) {
 
         DocID id = documents.size();
         index.add_document(id, doc->content);
-        documents.push_back(std::move(*doc));
+
+        DocumentRecord record;
+        record.id = id;
+        record.path = entry.path;
+        record.size = entry.size;
+        record.mtime = to_epoch_seconds(entry.last_write_time);
+        record.token_count = index.document_length(id);
+
+        documents.push_back(record);
+    }
+
+    std::error_code save_ec;
+    if (!save_index(db_path, documents, index, save_ec)) {
+        std::cerr << "Failed to save index: " << save_ec.message() << "\n";
+        return 1;
     }
 
     std::cout << "Indexed " << documents.size() << " documents"
                << " | skipped (extension): " << skipped_extension
-               << " | read failed: " << read_failed << "\n";
+               << " | read failed: " << read_failed
+               << " | saved to: " << db_path.string() << "\n";
 
-    std::cout << "\nEnter a search query (blank line to quit):\n";
+    return 0;
+}
 
-    std::string query;
-    while (true) {
-        std::cout << "> ";
-        if (!std::getline(std::cin, query) || query.empty()) {
-            break;
-        }
+int run_search(const std::string& query, const std::filesystem::path& db_path) {
+    std::vector<DocumentRecord> documents;
+    InvertedIndex index;
 
-        std::vector<std::string> query_tokens = tokenize(query);
-        if (query_tokens.empty()) {
-            std::cout << "No valid search term.\n";
+    std::error_code ec;
+    if (!load_index(db_path, documents, index, ec)) {
+        std::cerr << "Could not load index from " << db_path
+                   << " (" << ec.message() << "). Run 'findx index <path>' first.\n";
+        return 1;
+    }
+
+    std::vector<std::string> query_tokens = tokenize(query);
+    if (query_tokens.empty()) {
+        std::cout << "No valid search term.\n";
+        return 0;
+    }
+
+    std::vector<ScoredDocument> ranked = rank_bm25(index, query_tokens);
+    if (ranked.empty()) {
+        std::cout << "No matches.\n";
+        return 0;
+    }
+
+    std::cout << "Found " << ranked.size() << " document(s), ranked by relevance:\n";
+    for (const auto& sd : ranked) {
+        if (sd.id >= documents.size()) {
             continue;
         }
-
-        std::vector<ScoredDocument> ranked = rank_bm25(index, query_tokens);
-        if (ranked.empty()) {
-            std::cout << "No matches.\n";
-            continue;
-        }
-
-        std::cout << "Found " << ranked.size() << " document(s), ranked by relevance:\n";
-        for (const auto& sd : ranked) {
-            std::cout << "  " << documents[sd.id].path.string()
-                       << " (score: " << std::fixed << std::setprecision(3) << sd.score << ")\n";
-        }
+        std::cout << "  " << documents[sd.id].path.string()
+                   << " (score: " << std::fixed << std::setprecision(3) << sd.score << ")\n";
     }
 
     return 0;
+}
+
+} // namespace
+
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cerr << "Usage:\n"
+                   << "  findx index <path>\n"
+                   << "  findx search <query>\n";
+        return 1;
+    }
+
+    std::string command = argv[1];
+    std::filesystem::path db_path = "findx.db";
+
+    if (command == "index") {
+        std::filesystem::path root = argv[2];
+        return run_index(root, db_path);
+    }
+
+    if (command == "search") {
+        std::string query;
+        for (int i = 2; i < argc; ++i) {
+            if (i > 2) {
+                query += " ";
+            }
+            query += argv[i];
+        }
+        return run_search(query, db_path);
+    }
+
+    std::cerr << "Unknown command: " << command << "\n"
+               << "Usage:\n"
+               << "  findx index <path>\n"
+               << "  findx search <query>\n";
+    return 1;
 }

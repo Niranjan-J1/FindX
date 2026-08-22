@@ -248,6 +248,30 @@ src/reader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.s
 .PHONY : src/reader.cpp.s
 
+src/storage.obj: src/storage.cpp.obj
+.PHONY : src/storage.obj
+
+# target to build an object file
+src/storage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/storage.cpp.obj
+.PHONY : src/storage.cpp.obj
+
+src/storage.i: src/storage.cpp.i
+.PHONY : src/storage.i
+
+# target to preprocess a source file
+src/storage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/storage.cpp.i
+.PHONY : src/storage.cpp.i
+
+src/storage.s: src/storage.cpp.s
+.PHONY : src/storage.s
+
+# target to generate assembly for a file
+src/storage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/storage.cpp.s
+.PHONY : src/storage.cpp.s
+
 src/tokenizer.obj: src/tokenizer.cpp.obj
 .PHONY : src/tokenizer.obj
 
@@ -296,6 +320,9 @@ help:
 	@echo ... src/reader.obj
 	@echo ... src/reader.i
 	@echo ... src/reader.s
+	@echo ... src/storage.obj
+	@echo ... src/storage.i
+	@echo ... src/storage.s
 	@echo ... src/tokenizer.obj
 	@echo ... src/tokenizer.i
 	@echo ... src/tokenizer.s

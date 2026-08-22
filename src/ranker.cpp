@@ -55,3 +55,15 @@ std::vector<ScoredDocument> rank_bm25(const InvertedIndex& index, const std::vec
 
     return results;
 }
+
+const std::unordered_map<std::string, std::unordered_map<DocID, int>>& InvertedIndex::all_postings() const {
+    return index_;
+}
+
+void InvertedIndex::set_posting(const std::string& term, DocID id, int count) {
+    index_[term][id] = count;
+}
+
+void InvertedIndex::set_document_length(DocID id, std::size_t length) {
+    doc_lengths_[id] = length;
+}

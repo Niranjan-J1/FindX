@@ -1,0 +1,44 @@
+[
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\main.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\main.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/main.cpp",
+  "output": "CMakeFiles/findx.dir/src/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\crawler.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\crawler.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/crawler.cpp",
+  "output": "CMakeFiles/findx.dir/src/crawler.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\reader.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\reader.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/reader.cpp",
+  "output": "CMakeFiles/findx.dir/src/reader.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\tokenizer.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\tokenizer.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/tokenizer.cpp",
+  "output": "CMakeFiles/findx.dir/src/tokenizer.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\index.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\index.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/index.cpp",
+  "output": "CMakeFiles/findx.dir/src/index.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\ranker.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\ranker.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/ranker.cpp",
+  "output": "CMakeFiles/findx.dir/src/ranker.cpp.obj"
+},
+{
+  "directory": "C:/Users/niran/Desktop/FindX/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe   -std=gnu++17 -o CMakeFiles\\findx.dir\\src\\storage.cpp.obj -c C:\\Users\\niran\\Desktop\\FindX\\src\\storage.cpp",
+  "file": "C:/Users/niran/Desktop/FindX/src/storage.cpp",
+  "output": "CMakeFiles/findx.dir/src/storage.cpp.obj"
+}
+]
