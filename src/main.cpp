@@ -11,20 +11,16 @@
 #include <array>
 #include <cctype>
 #include <chrono>
-#include <ctime>
-#include <iomanip>
 #include <cstdint>
 #include <filesystem>
+#include <unordered_map>
+#include <unordered_set>
+#include <iomanip>
 
 namespace {
 
-std::int64_t to_epoch_seconds(std::filesystem::file_time_type ftime) {
-    using namespace std::chrono;
-
-    auto sctp = time_point_cast<system_clock::duration>(
-        ftime - std::filesystem::file_time_type::clock::now() + system_clock::now());
-
-    return static_cast<std::int64_t>(system_clock::to_time_t(sctp));
+std::int64_t mtime_signature(std::filesystem::file_time_type ftime) {
+    return static_cast<std::int64_t>(ftime.time_since_epoch().count());
 }
 
 bool has_indexable_extension(const std::filesystem::path& path) {
@@ -44,19 +40,38 @@ bool has_indexable_extension(const std::filesystem::path& path) {
 }
 
 int run_index(const std::filesystem::path& root, const std::filesystem::path& db_path) {
+    std::vector<ManifestEntry> manifest;
+    std::error_code manifest_ec;
+    if (!load_manifest(db_path, manifest, manifest_ec)) {
+        std::cerr << "Failed to load existing index manifest: " << manifest_ec.message() << "\n";
+        return 1;
+    }
+
+    std::unordered_map<std::string, ManifestEntry> existing_by_path;
+    DocID next_id = 0;
+    for (const auto& entry : manifest) {
+        existing_by_path[entry.path.string()] = entry;
+        if (entry.id >= next_id) {
+            next_id = entry.id + 1;
+        }
+    }
+
     std::error_code ec;
     std::vector<FileEntry> entries = crawl(root, ec);
-
     if (ec) {
         std::cerr << "Error crawling " << root << ": " << ec.message() << "\n";
         return 1;
     }
 
-    std::vector<DocumentRecord> documents;
-    InvertedIndex index;
+    std::vector<DocumentRecord> new_or_changed;
+    InvertedIndex delta_index;
+    std::unordered_set<std::string> seen_paths;
 
     std::size_t skipped_extension = 0;
     std::size_t read_failed = 0;
+    std::size_t unchanged_count = 0;
+    std::size_t new_count = 0;
+    std::size_t changed_count = 0;
 
     for (const auto& entry : entries) {
         if (!has_indexable_extension(entry.path)) {
@@ -64,38 +79,72 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
             continue;
         }
 
+        std::string path_str = entry.path.string();
+        seen_paths.insert(path_str);
+
+        std::int64_t mtime = mtime_signature(entry.last_write_time);
+
+        auto found = existing_by_path.find(path_str);
+        DocID id;
+        bool needs_processing = true;
+
+        if (found == existing_by_path.end()) {
+            id = next_id++;
+            ++new_count;
+        } else {
+            id = found->second.id;
+            if (found->second.size == entry.size && found->second.mtime == mtime) {
+                needs_processing = false;
+                ++unchanged_count;
+            } else {
+                ++changed_count;
+            }
+        }
+
+        if (!needs_processing) {
+            continue;
+        }
+
         std::error_code read_ec;
         auto doc = read_file(entry.path, read_ec);
-
         if (!doc) {
             std::cerr << "Failed to read " << entry.path << ": " << read_ec.message() << "\n";
             ++read_failed;
             continue;
         }
 
-        DocID id = documents.size();
-        index.add_document(id, doc->content);
+        delta_index.add_document(id, doc->content);
 
         DocumentRecord record;
         record.id = id;
         record.path = entry.path;
         record.size = entry.size;
-        record.mtime = to_epoch_seconds(entry.last_write_time);
-        record.token_count = index.document_length(id);
+        record.mtime = mtime;
+        record.token_count = delta_index.document_length(id);
 
-        documents.push_back(record);
+        new_or_changed.push_back(record);
     }
 
-    std::error_code save_ec;
-    if (!save_index(db_path, documents, index, save_ec)) {
-        std::cerr << "Failed to save index: " << save_ec.message() << "\n";
+    std::vector<DocID> deleted_ids;
+    for (const auto& entry : manifest) {
+        if (seen_paths.find(entry.path.string()) == seen_paths.end()) {
+            deleted_ids.push_back(entry.id);
+        }
+    }
+
+    std::error_code sync_ec;
+    if (!sync_index(db_path, new_or_changed, delta_index, deleted_ids, sync_ec)) {
+        std::cerr << "Failed to sync index: " << sync_ec.message() << "\n";
         return 1;
     }
 
-    std::cout << "Indexed " << documents.size() << " documents"
+    std::cout << "Index sync complete for: " << db_path.string() << "\n"
+               << "  new: " << new_count
+               << " | changed: " << changed_count
+               << " | unchanged: " << unchanged_count
+               << " | deleted: " << deleted_ids.size()
                << " | skipped (extension): " << skipped_extension
-               << " | read failed: " << read_failed
-               << " | saved to: " << db_path.string() << "\n";
+               << " | read failed: " << read_failed << "\n";
 
     return 0;
 }

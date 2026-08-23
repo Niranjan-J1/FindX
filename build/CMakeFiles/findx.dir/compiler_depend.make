@@ -392,6 +392,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/bits/stringfwd.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unique_ptr.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_map.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/uses_allocator.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/utility.h \
@@ -446,6 +447,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/type_traits \
   C:/msys64/mingw64/include/c++/15.2.0/typeinfo \
   C:/msys64/mingw64/include/c++/15.2.0/unordered_map \
+  C:/msys64/mingw64/include/c++/15.2.0/unordered_set \
   C:/msys64/mingw64/include/c++/15.2.0/vector \
   C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/atomic_word.h \
   C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++allocator.h \
@@ -505,6 +507,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/Users/niran/Desktop/FindX/src/index.h \
   C:/Users/niran/Desktop/FindX/src/ranker.h \
   C:/Users/niran/Desktop/FindX/src/reader.h \
+  C:/Users/niran/Desktop/FindX/src/storage.h \
   C:/Users/niran/Desktop/FindX/src/tokenizer.h
 
 CMakeFiles/findx.dir/src/ranker.cpp.obj: C:/Users/niran/Desktop/FindX/src/ranker.cpp \
@@ -1231,6 +1234,8 @@ C:/msys64/mingw64/include/c++/15.2.0/bits/chrono.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/cpp_type_traits.h:
 
+C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h:
+
 C:/msys64/mingw64/include/c++/15.2.0/bits/cxxabi_forced.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/cxxabi_init_exception.h:
@@ -1575,9 +1580,13 @@ C:/msys64/mingw64/include/c++/15.2.0/chrono:
 
 C:/msys64/mingw64/include/c++/15.2.0/optional:
 
+C:/msys64/mingw64/include/c++/15.2.0/unordered_set:
+
 C:/msys64/mingw64/include/math.h:
 
 C:/Users/niran/Desktop/FindX/src/ranker.h:
+
+C:/Users/niran/Desktop/FindX/src/storage.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/stl_tempbuf.h:
 
@@ -1620,5 +1629,3 @@ C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++io.h:
 C:/msys64/mingw64/include/sqlite3.h:
 
 C:/msys64/mingw64/include/stdarg.h:
-
-C:/Users/niran/Desktop/FindX/src/storage.h:
