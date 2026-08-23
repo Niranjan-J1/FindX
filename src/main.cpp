@@ -4,6 +4,7 @@
 #include "tokenizer.h"
 #include "ranker.h"
 #include "storage.h"
+#include "threadsafe_queue.h"
 
 #include <iostream>
 #include <string>
@@ -16,6 +17,9 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iomanip>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 namespace {
 
@@ -37,6 +41,55 @@ bool has_indexable_extension(const std::filesystem::path& path) {
         }
     }
     return false;
+}
+
+struct PendingFile {
+    std::filesystem::path path;
+    std::uintmax_t size;
+    std::int64_t mtime;
+    DocID id;
+};
+
+void run_worker(ThreadSafeQueue<PendingFile>& queue,
+                 InvertedIndex& shared_index,
+                 std::mutex& index_mutex,
+                 std::vector<DocumentRecord>& new_or_changed,
+                 std::atomic<std::size_t>& read_failed)
+{
+    PendingFile item;
+    while (queue.pop(item)) {
+        std::error_code read_ec;
+        auto doc = read_file(item.path, read_ec);
+
+        if (!doc) {
+            std::cerr << "Failed to read " << item.path << ": " << read_ec.message() << "\n";
+            ++read_failed;
+            continue;
+        }
+
+        std::vector<std::string> tokens = tokenize(doc->content);
+
+        std::unordered_map<std::string, int> term_counts;
+        for (const auto& term : tokens) {
+            term_counts[term]++;
+        }
+
+        DocumentRecord record;
+        record.id = item.id;
+        record.path = item.path;
+        record.size = item.size;
+        record.mtime = item.mtime;
+        record.token_count = tokens.size();
+
+        {
+            std::lock_guard<std::mutex> lock(index_mutex);
+            shared_index.set_document_length(item.id, tokens.size());
+            for (const auto& [term, count] : term_counts) {
+                shared_index.set_posting(term, item.id, count);
+            }
+            new_or_changed.push_back(record);
+        }
+    }
 }
 
 int run_index(const std::filesystem::path& root, const std::filesystem::path& db_path) {
@@ -63,12 +116,10 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
         return 1;
     }
 
-    std::vector<DocumentRecord> new_or_changed;
-    InvertedIndex delta_index;
+    ThreadSafeQueue<PendingFile> queue;
     std::unordered_set<std::string> seen_paths;
 
     std::size_t skipped_extension = 0;
-    std::size_t read_failed = 0;
     std::size_t unchanged_count = 0;
     std::size_t new_count = 0;
     std::size_t changed_count = 0;
@@ -86,43 +137,41 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
 
         auto found = existing_by_path.find(path_str);
         DocID id;
-        bool needs_processing = true;
 
         if (found == existing_by_path.end()) {
             id = next_id++;
             ++new_count;
+            queue.push(PendingFile{ entry.path, entry.size, mtime, id });
         } else {
             id = found->second.id;
             if (found->second.size == entry.size && found->second.mtime == mtime) {
-                needs_processing = false;
                 ++unchanged_count;
             } else {
                 ++changed_count;
+                queue.push(PendingFile{ entry.path, entry.size, mtime, id });
             }
         }
+    }
+    queue.close();
 
-        if (!needs_processing) {
-            continue;
-        }
+    InvertedIndex delta_index;
+    std::vector<DocumentRecord> new_or_changed;
+    std::mutex index_mutex;
+    std::atomic<std::size_t> read_failed{0};
 
-        std::error_code read_ec;
-        auto doc = read_file(entry.path, read_ec);
-        if (!doc) {
-            std::cerr << "Failed to read " << entry.path << ": " << read_ec.message() << "\n";
-            ++read_failed;
-            continue;
-        }
+    unsigned int thread_count = std::thread::hardware_concurrency();
+    if (thread_count == 0) {
+        thread_count = 4;
+    }
 
-        delta_index.add_document(id, doc->content);
+    std::vector<std::thread> workers;
+    for (unsigned int i = 0; i < thread_count; ++i) {
+        workers.emplace_back(run_worker, std::ref(queue), std::ref(delta_index),
+                              std::ref(index_mutex), std::ref(new_or_changed), std::ref(read_failed));
+    }
 
-        DocumentRecord record;
-        record.id = id;
-        record.path = entry.path;
-        record.size = entry.size;
-        record.mtime = mtime;
-        record.token_count = delta_index.document_length(id);
-
-        new_or_changed.push_back(record);
+    for (auto& t : workers) {
+        t.join();
     }
 
     std::vector<DocID> deleted_ids;
@@ -144,7 +193,8 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
                << " | unchanged: " << unchanged_count
                << " | deleted: " << deleted_ids.size()
                << " | skipped (extension): " << skipped_extension
-               << " | read failed: " << read_failed << "\n";
+               << " | read failed: " << read_failed.load()
+               << " | threads used: " << thread_count << "\n";
 
     return 0;
 }

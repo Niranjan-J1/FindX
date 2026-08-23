@@ -4,7 +4,6 @@ project(findx LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(findx
     src/main.cpp
@@ -27,3 +26,6 @@ else()
     target_link_directories(findx PRIVATE "C:/msys64/mingw64/lib")
     target_link_libraries(findx PRIVATE sqlite3)
 endif()
+
+find_package(Threads REQUIRED)
+target_link_libraries(findx PRIVATE Threads::Threads)

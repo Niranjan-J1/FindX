@@ -193,9 +193,28 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:\Users\niran\Desktop\FindX\src\tokenizer.h \
  C:\Users\niran\Desktop\FindX\src\ranker.h \
  C:\Users\niran\Desktop\FindX\src\storage.h \
+ C:\Users\niran\Desktop\FindX\src\threadsafe_queue.h \
+ C:/msys64/mingw64/include/c++/15.2.0/queue \
+ C:/msys64/mingw64/include/c++/15.2.0/deque \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/stl_deque.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/deque.tcc \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/stl_heap.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/stl_queue.h \
+ C:/msys64/mingw64/include/c++/15.2.0/mutex \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/std_mutex.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/unique_lock.h \
+ C:/msys64/mingw64/include/c++/15.2.0/condition_variable \
+ C:/msys64/mingw64/include/c++/15.2.0/utility \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/stl_relops.h \
  C:/msys64/mingw64/include/c++/15.2.0/iostream \
  C:/msys64/mingw64/include/c++/15.2.0/array \
  C:/msys64/mingw64/include/c++/15.2.0/compare \
  C:/msys64/mingw64/include/c++/15.2.0/chrono \
  C:/msys64/mingw64/include/c++/15.2.0/unordered_set \
- C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h
+ C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h \
+ C:/msys64/mingw64/include/c++/15.2.0/thread \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/std_thread.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h \
+ C:/msys64/mingw64/include/c++/15.2.0/atomic \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_base.h \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_lockfree_defines.h
