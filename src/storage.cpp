@@ -17,6 +17,7 @@ bool exec_sql(sqlite3* db, const char* sql, std::error_code& ec) {
     return true;
 }
 
+// NEW: chunks table added alongside documents/postings
 const char* CREATE_SCHEMA_SQL =
     "CREATE TABLE IF NOT EXISTS documents ("
     "  id INTEGER PRIMARY KEY,"
@@ -30,6 +31,12 @@ const char* CREATE_SCHEMA_SQL =
     "  doc_id INTEGER NOT NULL REFERENCES documents(id),"
     "  count INTEGER NOT NULL,"
     "  PRIMARY KEY (term, doc_id)"
+    ");"
+    "CREATE TABLE IF NOT EXISTS chunks ("
+    "  id INTEGER PRIMARY KEY,"
+    "  doc_id INTEGER NOT NULL REFERENCES documents(id),"
+    "  chunk_index INTEGER NOT NULL,"
+    "  text TEXT NOT NULL"
     ");";
 
 } // namespace
@@ -48,6 +55,7 @@ bool save_index(const std::filesystem::path& db_path,
 
     const char* drop_sql =
         "DROP TABLE IF EXISTS postings;"
+        "DROP TABLE IF EXISTS chunks;"
         "DROP TABLE IF EXISTS documents;";
     if (!exec_sql(db, drop_sql, ec)) { sqlite3_close(db); return false; }
     if (!exec_sql(db, CREATE_SCHEMA_SQL, ec)) { sqlite3_close(db); return false; }
@@ -219,6 +227,7 @@ bool load_manifest(const std::filesystem::path& db_path,
 bool sync_index(const std::filesystem::path& db_path,
                  const std::vector<DocumentRecord>& new_or_changed_documents,
                  const InvertedIndex& new_postings_index,
+                 const std::vector<ChunkRecord>& new_chunks,
                  const std::vector<DocID>& deleted_ids,
                  std::error_code& ec)
 {
@@ -232,9 +241,12 @@ bool sync_index(const std::filesystem::path& db_path,
     if (!exec_sql(db, CREATE_SCHEMA_SQL, ec)) { sqlite3_close(db); return false; }
     if (!exec_sql(db, "BEGIN TRANSACTION;", ec)) { sqlite3_close(db); return false; }
 
+    // Deleted documents: clean up postings + chunks + the document row itself
     sqlite3_stmt* del_postings_stmt = nullptr;
+    sqlite3_stmt* del_chunks_stmt = nullptr;
     sqlite3_stmt* del_doc_stmt = nullptr;
     if (sqlite3_prepare_v2(db, "DELETE FROM postings WHERE doc_id = ?;", -1, &del_postings_stmt, nullptr) != SQLITE_OK ||
+        sqlite3_prepare_v2(db, "DELETE FROM chunks WHERE doc_id = ?;", -1, &del_chunks_stmt, nullptr) != SQLITE_OK ||
         sqlite3_prepare_v2(db, "DELETE FROM documents WHERE id = ?;", -1, &del_doc_stmt, nullptr) != SQLITE_OK)
     {
         ec = std::make_error_code(std::errc::io_error);
@@ -247,16 +259,24 @@ bool sync_index(const std::filesystem::path& db_path,
         sqlite3_step(del_postings_stmt);
         sqlite3_reset(del_postings_stmt);
 
+        sqlite3_bind_int64(del_chunks_stmt, 1, static_cast<sqlite3_int64>(id));
+        sqlite3_step(del_chunks_stmt);
+        sqlite3_reset(del_chunks_stmt);
+
         sqlite3_bind_int64(del_doc_stmt, 1, static_cast<sqlite3_int64>(id));
         sqlite3_step(del_doc_stmt);
         sqlite3_reset(del_doc_stmt);
     }
     sqlite3_finalize(del_postings_stmt);
+    sqlite3_finalize(del_chunks_stmt);
     sqlite3_finalize(del_doc_stmt);
 
+    // New/changed documents: clear old postings + chunks before upserting the document row
     sqlite3_stmt* clear_postings_stmt = nullptr;
+    sqlite3_stmt* clear_chunks_stmt = nullptr;
     sqlite3_stmt* upsert_doc_stmt = nullptr;
     if (sqlite3_prepare_v2(db, "DELETE FROM postings WHERE doc_id = ?;", -1, &clear_postings_stmt, nullptr) != SQLITE_OK ||
+        sqlite3_prepare_v2(db, "DELETE FROM chunks WHERE doc_id = ?;", -1, &clear_chunks_stmt, nullptr) != SQLITE_OK ||
         sqlite3_prepare_v2(db,
             "INSERT OR REPLACE INTO documents (id, path, size, mtime, token_count) VALUES (?, ?, ?, ?, ?);",
             -1, &upsert_doc_stmt, nullptr) != SQLITE_OK)
@@ -271,6 +291,10 @@ bool sync_index(const std::filesystem::path& db_path,
         sqlite3_step(clear_postings_stmt);
         sqlite3_reset(clear_postings_stmt);
 
+        sqlite3_bind_int64(clear_chunks_stmt, 1, static_cast<sqlite3_int64>(doc.id));
+        sqlite3_step(clear_chunks_stmt);
+        sqlite3_reset(clear_chunks_stmt);
+
         std::string path_str = doc.path.string();
         sqlite3_bind_int64(upsert_doc_stmt, 1, static_cast<sqlite3_int64>(doc.id));
         sqlite3_bind_text(upsert_doc_stmt, 2, path_str.c_str(), -1, SQLITE_TRANSIENT);
@@ -281,6 +305,7 @@ bool sync_index(const std::filesystem::path& db_path,
         if (sqlite3_step(upsert_doc_stmt) != SQLITE_DONE) {
             ec = std::make_error_code(std::errc::io_error);
             sqlite3_finalize(clear_postings_stmt);
+            sqlite3_finalize(clear_chunks_stmt);
             sqlite3_finalize(upsert_doc_stmt);
             sqlite3_close(db);
             return false;
@@ -288,6 +313,7 @@ bool sync_index(const std::filesystem::path& db_path,
         sqlite3_reset(upsert_doc_stmt);
     }
     sqlite3_finalize(clear_postings_stmt);
+    sqlite3_finalize(clear_chunks_stmt);
     sqlite3_finalize(upsert_doc_stmt);
 
     sqlite3_stmt* insert_posting_stmt = nullptr;
@@ -313,6 +339,29 @@ bool sync_index(const std::filesystem::path& db_path,
         }
     }
     sqlite3_finalize(insert_posting_stmt);
+
+    // NEW: insert this run's chunks
+    sqlite3_stmt* insert_chunk_stmt = nullptr;
+    if (sqlite3_prepare_v2(db, "INSERT INTO chunks (doc_id, chunk_index, text) VALUES (?, ?, ?);", -1, &insert_chunk_stmt, nullptr) != SQLITE_OK) {
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return false;
+    }
+
+    for (const auto& chunk : new_chunks) {
+        sqlite3_bind_int64(insert_chunk_stmt, 1, static_cast<sqlite3_int64>(chunk.doc_id));
+        sqlite3_bind_int64(insert_chunk_stmt, 2, static_cast<sqlite3_int64>(chunk.chunk_index));
+        sqlite3_bind_text(insert_chunk_stmt, 3, chunk.text.c_str(), -1, SQLITE_TRANSIENT);
+
+        if (sqlite3_step(insert_chunk_stmt) != SQLITE_DONE) {
+            ec = std::make_error_code(std::errc::io_error);
+            sqlite3_finalize(insert_chunk_stmt);
+            sqlite3_close(db);
+            return false;
+        }
+        sqlite3_reset(insert_chunk_stmt);
+    }
+    sqlite3_finalize(insert_chunk_stmt);
 
     if (!exec_sql(db, "COMMIT;", ec)) { sqlite3_close(db); return false; }
 

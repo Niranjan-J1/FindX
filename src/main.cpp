@@ -5,6 +5,7 @@
 #include "ranker.h"
 #include "storage.h"
 #include "threadsafe_queue.h"
+#include "chunker.h"
 
 #include <iostream>
 #include <string>
@@ -50,10 +51,12 @@ struct PendingFile {
     DocID id;
 };
 
+// new_chunks parameter added — worker now produces chunks alongside postings/document records
 void run_worker(ThreadSafeQueue<PendingFile>& queue,
                  InvertedIndex& shared_index,
                  std::mutex& index_mutex,
                  std::vector<DocumentRecord>& new_or_changed,
+                 std::vector<ChunkRecord>& new_chunks,
                  std::atomic<std::size_t>& read_failed)
 {
     PendingFile item;
@@ -74,6 +77,9 @@ void run_worker(ThreadSafeQueue<PendingFile>& queue,
             term_counts[term]++;
         }
 
+        // NEW: chunk the same raw content for semantic search, separate from tokenize()'s output
+        std::vector<std::string> text_chunks = chunk_text(doc->content);
+
         DocumentRecord record;
         record.id = item.id;
         record.path = item.path;
@@ -88,6 +94,15 @@ void run_worker(ThreadSafeQueue<PendingFile>& queue,
                 shared_index.set_posting(term, item.id, count);
             }
             new_or_changed.push_back(record);
+
+            // NEW: push this document's chunks into the shared vector, same critical section as everything else
+            for (std::size_t i = 0; i < text_chunks.size(); ++i) {
+                ChunkRecord chunk;
+                chunk.doc_id = item.id;
+                chunk.chunk_index = i;
+                chunk.text = text_chunks[i];
+                new_chunks.push_back(std::move(chunk));
+            }
         }
     }
 }
@@ -156,6 +171,7 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
 
     InvertedIndex delta_index;
     std::vector<DocumentRecord> new_or_changed;
+    std::vector<ChunkRecord> new_chunks;  // NEW
     std::mutex index_mutex;
     std::atomic<std::size_t> read_failed{0};
 
@@ -167,7 +183,8 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
     std::vector<std::thread> workers;
     for (unsigned int i = 0; i < thread_count; ++i) {
         workers.emplace_back(run_worker, std::ref(queue), std::ref(delta_index),
-                              std::ref(index_mutex), std::ref(new_or_changed), std::ref(read_failed));
+                              std::ref(index_mutex), std::ref(new_or_changed),
+                              std::ref(new_chunks), std::ref(read_failed));
     }
 
     for (auto& t : workers) {
@@ -182,7 +199,7 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
     }
 
     std::error_code sync_ec;
-    if (!sync_index(db_path, new_or_changed, delta_index, deleted_ids, sync_ec)) {
+    if (!sync_index(db_path, new_or_changed, delta_index, new_chunks, deleted_ids, sync_ec)) {
         std::cerr << "Failed to sync index: " << sync_ec.message() << "\n";
         return 1;
     }
@@ -194,6 +211,7 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
                << " | deleted: " << deleted_ids.size()
                << " | skipped (extension): " << skipped_extension
                << " | read failed: " << read_failed.load()
+               << " | chunks written: " << new_chunks.size()  // NEW
                << " | threads used: " << thread_count << "\n";
 
     return 0;

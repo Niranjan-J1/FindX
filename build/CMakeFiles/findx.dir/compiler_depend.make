@@ -313,11 +313,14 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/_mingw_stat64.h \
   C:/msys64/mingw64/include/_timeval.h \
   C:/msys64/mingw64/include/c++/15.2.0/array \
+  C:/msys64/mingw64/include/c++/15.2.0/atomic \
   C:/msys64/mingw64/include/c++/15.2.0/backward/binders.h \
   C:/msys64/mingw64/include/c++/15.2.0/bit \
   C:/msys64/mingw64/include/c++/15.2.0/bits/alloc_traits.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/allocated_ptr.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/allocator.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_base.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_lockfree_defines.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/basic_ios.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/basic_ios.tcc \
   C:/msys64/mingw64/include/c++/15.2.0/bits/basic_string.h \
@@ -330,6 +333,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/bits/cpp_type_traits.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/cxxabi_forced.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/cxxabi_init_exception.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/deque.tcc \
   C:/msys64/mingw64/include/c++/15.2.0/bits/enable_special_members.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/erase_if.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/exception.h \
@@ -376,20 +380,28 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/bits/shared_ptr_base.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/sstream.tcc \
   C:/msys64/mingw64/include/c++/15.2.0/bits/std_abs.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/std_mutex.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/std_thread.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_algobase.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_bvector.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_construct.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_deque.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_function.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_heap.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_iterator.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_iterator_base_funcs.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_iterator_base_types.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_pair.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_queue.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_relops.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_vector.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/streambuf.tcc \
   C:/msys64/mingw64/include/c++/15.2.0/bits/streambuf_iterator.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/string_view.tcc \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stringfwd.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/unique_lock.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unique_ptr.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_map.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h \
@@ -405,6 +417,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/codecvt \
   C:/msys64/mingw64/include/c++/15.2.0/compare \
   C:/msys64/mingw64/include/c++/15.2.0/concepts \
+  C:/msys64/mingw64/include/c++/15.2.0/condition_variable \
   C:/msys64/mingw64/include/c++/15.2.0/cstddef \
   C:/msys64/mingw64/include/c++/15.2.0/cstdint \
   C:/msys64/mingw64/include/c++/15.2.0/cstdio \
@@ -414,6 +427,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/cwctype \
   C:/msys64/mingw64/include/c++/15.2.0/debug/assertions.h \
   C:/msys64/mingw64/include/c++/15.2.0/debug/debug.h \
+  C:/msys64/mingw64/include/c++/15.2.0/deque \
   C:/msys64/mingw64/include/c++/15.2.0/exception \
   C:/msys64/mingw64/include/c++/15.2.0/ext/aligned_buffer.h \
   C:/msys64/mingw64/include/c++/15.2.0/ext/alloc_traits.h \
@@ -431,10 +445,12 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/istream \
   C:/msys64/mingw64/include/c++/15.2.0/limits \
   C:/msys64/mingw64/include/c++/15.2.0/locale \
+  C:/msys64/mingw64/include/c++/15.2.0/mutex \
   C:/msys64/mingw64/include/c++/15.2.0/new \
   C:/msys64/mingw64/include/c++/15.2.0/optional \
   C:/msys64/mingw64/include/c++/15.2.0/ostream \
   C:/msys64/mingw64/include/c++/15.2.0/pstl/pstl_config.h \
+  C:/msys64/mingw64/include/c++/15.2.0/queue \
   C:/msys64/mingw64/include/c++/15.2.0/ratio \
   C:/msys64/mingw64/include/c++/15.2.0/sstream \
   C:/msys64/mingw64/include/c++/15.2.0/stdexcept \
@@ -443,11 +459,13 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/msys64/mingw64/include/c++/15.2.0/string \
   C:/msys64/mingw64/include/c++/15.2.0/string_view \
   C:/msys64/mingw64/include/c++/15.2.0/system_error \
+  C:/msys64/mingw64/include/c++/15.2.0/thread \
   C:/msys64/mingw64/include/c++/15.2.0/tuple \
   C:/msys64/mingw64/include/c++/15.2.0/type_traits \
   C:/msys64/mingw64/include/c++/15.2.0/typeinfo \
   C:/msys64/mingw64/include/c++/15.2.0/unordered_map \
   C:/msys64/mingw64/include/c++/15.2.0/unordered_set \
+  C:/msys64/mingw64/include/c++/15.2.0/utility \
   C:/msys64/mingw64/include/c++/15.2.0/vector \
   C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/atomic_word.h \
   C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++allocator.h \
@@ -508,6 +526,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
   C:/Users/niran/Desktop/FindX/src/ranker.h \
   C:/Users/niran/Desktop/FindX/src/reader.h \
   C:/Users/niran/Desktop/FindX/src/storage.h \
+  C:/Users/niran/Desktop/FindX/src/threadsafe_queue.h \
   C:/Users/niran/Desktop/FindX/src/tokenizer.h
 
 CMakeFiles/findx.dir/src/ranker.cpp.obj: C:/Users/niran/Desktop/FindX/src/ranker.cpp \
@@ -1174,6 +1193,8 @@ C:/msys64/mingw64/include/c++/15.2.0/bits/node_handle.h:
 
 C:/msys64/mingw64/include/_mingw_mac.h:
 
+C:/Users/niran/Desktop/FindX/src/threadsafe_queue.h:
+
 C:/msys64/mingw64/include/sec_api/wchar_s.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/backward/binders.h:
@@ -1266,6 +1287,10 @@ C:/msys64/mingw64/include/c++/15.2.0/tr1/modified_bessel_func.tcc:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/functional_hash.h:
 
+C:/msys64/mingw64/include/c++/15.2.0/mutex:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_lockfree_defines.h:
+
 C:/msys64/mingw64/include/c++/15.2.0/bits/invoke.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/istream.tcc:
@@ -1304,6 +1329,8 @@ C:/msys64/mingw64/include/c++/15.2.0/bits/requires_hosted.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/shared_ptr.h:
 
+C:/msys64/mingw64/include/c++/15.2.0/bits/std_thread.h:
+
 C:/msys64/mingw64/include/swprintf.inl:
 
 C:/msys64/mingw64/include/c++/15.2.0/cerrno:
@@ -1315,6 +1342,8 @@ C:/msys64/mingw64/include/c++/15.2.0/bits/stl_algobase.h:
 C:/msys64/mingw64/include/_mingw_stdarg.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/stl_bvector.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/unique_lock.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/hashtable_policy.h:
 
@@ -1396,6 +1425,8 @@ C:/msys64/mingw64/include/c++/15.2.0/ext/alloc_traits.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/ext/atomicity.h:
 
+C:/msys64/mingw64/include/c++/15.2.0/bits/deque.tcc:
+
 C:/msys64/mingw64/include/c++/15.2.0/ext/concurrence.h:
 
 C:/msys64/mingw64/include/limits.h:
@@ -1441,6 +1472,8 @@ C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/mm_malloc.h:
 C:/msys64/mingw64/include/c++/15.2.0/ratio:
 
 C:/msys64/mingw64/include/c++/15.2.0/sstream:
+
+C:/msys64/mingw64/include/c++/15.2.0/utility:
 
 C:/msys64/mingw64/include/c++/15.2.0/stdexcept:
 
@@ -1576,9 +1609,33 @@ C:/Users/niran/Desktop/FindX/src/index.h:
 
 C:/Users/niran/Desktop/FindX/src/main.cpp:
 
+C:/msys64/mingw64/include/c++/15.2.0/atomic:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/atomic_base.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/std_mutex.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/stl_deque.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/stl_heap.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/stl_queue.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/stl_relops.h:
+
+C:/msys64/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h:
+
 C:/msys64/mingw64/include/c++/15.2.0/chrono:
 
+C:/msys64/mingw64/include/c++/15.2.0/condition_variable:
+
+C:/msys64/mingw64/include/c++/15.2.0/deque:
+
 C:/msys64/mingw64/include/c++/15.2.0/optional:
+
+C:/msys64/mingw64/include/c++/15.2.0/queue:
+
+C:/msys64/mingw64/include/c++/15.2.0/thread:
 
 C:/msys64/mingw64/include/c++/15.2.0/unordered_set:
 
@@ -1597,8 +1654,6 @@ C:/msys64/mingw64/include/c++/15.2.0/bits/algorithmfwd.h:
 C:/msys64/mingw64/include/c++/15.2.0/bits/specfun.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/bits/stl_algo.h:
-
-C:/msys64/mingw64/include/c++/15.2.0/bits/stl_heap.h:
 
 C:/msys64/mingw64/include/c++/15.2.0/cmath:
 

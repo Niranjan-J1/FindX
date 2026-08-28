@@ -128,6 +128,30 @@ findx/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/build
 .PHONY : findx/fast
 
+src/chunker.obj: src/chunker.cpp.obj
+.PHONY : src/chunker.obj
+
+# target to build an object file
+src/chunker.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/chunker.cpp.obj
+.PHONY : src/chunker.cpp.obj
+
+src/chunker.i: src/chunker.cpp.i
+.PHONY : src/chunker.i
+
+# target to preprocess a source file
+src/chunker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/chunker.cpp.i
+.PHONY : src/chunker.cpp.i
+
+src/chunker.s: src/chunker.cpp.s
+.PHONY : src/chunker.s
+
+# target to generate assembly for a file
+src/chunker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/chunker.cpp.s
+.PHONY : src/chunker.cpp.s
+
 src/crawler.obj: src/crawler.cpp.obj
 .PHONY : src/crawler.obj
 
@@ -305,6 +329,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... findx
+	@echo ... src/chunker.obj
+	@echo ... src/chunker.i
+	@echo ... src/chunker.s
 	@echo ... src/crawler.obj
 	@echo ... src/crawler.i
 	@echo ... src/crawler.s

@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/findx.dir/src/chunker.cpp.obj"
+  "CMakeFiles/findx.dir/src/chunker.cpp.obj.d"
   "CMakeFiles/findx.dir/src/crawler.cpp.obj"
   "CMakeFiles/findx.dir/src/crawler.cpp.obj.d"
   "CMakeFiles/findx.dir/src/index.cpp.obj"

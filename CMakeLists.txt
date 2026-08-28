@@ -13,6 +13,7 @@ add_executable(findx
     src/index.cpp
     src/ranker.cpp
     src/storage.cpp
+    src/chunker.cpp
 )
 
 find_package(SQLite3)
