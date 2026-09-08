@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/findx.dir/src/chunker.cpp.obj.d"
   "CMakeFiles/findx.dir/src/crawler.cpp.obj"
   "CMakeFiles/findx.dir/src/crawler.cpp.obj.d"
+  "CMakeFiles/findx.dir/src/embed_client.cpp.obj"
+  "CMakeFiles/findx.dir/src/embed_client.cpp.obj.d"
   "CMakeFiles/findx.dir/src/index.cpp.obj"
   "CMakeFiles/findx.dir/src/index.cpp.obj.d"
   "CMakeFiles/findx.dir/src/main.cpp.obj"

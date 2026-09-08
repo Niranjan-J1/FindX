@@ -6,6 +6,7 @@
 #include "storage.h"
 #include "threadsafe_queue.h"
 #include "chunker.h"
+#include "embed_client.h"
 
 #include <iostream>
 #include <string>
@@ -51,7 +52,6 @@ struct PendingFile {
     DocID id;
 };
 
-// new_chunks parameter added — worker now produces chunks alongside postings/document records
 void run_worker(ThreadSafeQueue<PendingFile>& queue,
                  InvertedIndex& shared_index,
                  std::mutex& index_mutex,
@@ -77,7 +77,6 @@ void run_worker(ThreadSafeQueue<PendingFile>& queue,
             term_counts[term]++;
         }
 
-        // NEW: chunk the same raw content for semantic search, separate from tokenize()'s output
         std::vector<std::string> text_chunks = chunk_text(doc->content);
 
         DocumentRecord record;
@@ -95,7 +94,6 @@ void run_worker(ThreadSafeQueue<PendingFile>& queue,
             }
             new_or_changed.push_back(record);
 
-            // NEW: push this document's chunks into the shared vector, same critical section as everything else
             for (std::size_t i = 0; i < text_chunks.size(); ++i) {
                 ChunkRecord chunk;
                 chunk.doc_id = item.id;
@@ -171,7 +169,7 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
 
     InvertedIndex delta_index;
     std::vector<DocumentRecord> new_or_changed;
-    std::vector<ChunkRecord> new_chunks;  // NEW
+    std::vector<ChunkRecord> new_chunks;
     std::mutex index_mutex;
     std::atomic<std::size_t> read_failed{0};
 
@@ -211,7 +209,7 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
                << " | deleted: " << deleted_ids.size()
                << " | skipped (extension): " << skipped_extension
                << " | read failed: " << read_failed.load()
-               << " | chunks written: " << new_chunks.size()  // NEW
+               << " | chunks written: " << new_chunks.size()
                << " | threads used: " << thread_count << "\n";
 
     return 0;
@@ -255,6 +253,18 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
 } // namespace
 
 int main(int argc, char* argv[]) {
+
+    if (argc > 2 && std::string(argv[1]) == "test-embed") {
+        std::error_code ec;
+        auto vec = get_query_embedding(argv[2], ec);
+        if (ec) {
+            std::cerr << "Error: " << ec.message() << "\n";
+            return 1;
+        }
+        std::cout << "Got embedding with " << vec.size() << " dimensions\n";
+        return 0;
+    }
+
     if (argc < 3) {
         std::cerr << "Usage:\n"
                    << "  findx index <path>\n"

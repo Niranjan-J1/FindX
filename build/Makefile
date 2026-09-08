@@ -176,6 +176,30 @@ src/crawler.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/crawler.cpp.s
 .PHONY : src/crawler.cpp.s
 
+src/embed_client.obj: src/embed_client.cpp.obj
+.PHONY : src/embed_client.obj
+
+# target to build an object file
+src/embed_client.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/embed_client.cpp.obj
+.PHONY : src/embed_client.cpp.obj
+
+src/embed_client.i: src/embed_client.cpp.i
+.PHONY : src/embed_client.i
+
+# target to preprocess a source file
+src/embed_client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/embed_client.cpp.i
+.PHONY : src/embed_client.cpp.i
+
+src/embed_client.s: src/embed_client.cpp.s
+.PHONY : src/embed_client.s
+
+# target to generate assembly for a file
+src/embed_client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/embed_client.cpp.s
+.PHONY : src/embed_client.cpp.s
+
 src/index.obj: src/index.cpp.obj
 .PHONY : src/index.obj
 
@@ -335,6 +359,9 @@ help:
 	@echo ... src/crawler.obj
 	@echo ... src/crawler.i
 	@echo ... src/crawler.s
+	@echo ... src/embed_client.obj
+	@echo ... src/embed_client.i
+	@echo ... src/embed_client.s
 	@echo ... src/index.obj
 	@echo ... src/index.i
 	@echo ... src/index.s
