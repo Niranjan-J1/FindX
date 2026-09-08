@@ -34,6 +34,21 @@ struct ChunkRecord {
     std::string text;                // the chunk's actual text, UNMODIFIED — no lowercasing, no punctuation stripped
 };
 
+
+struct SemanticResult {
+    DocID doc_id;
+    std::filesystem::path path;
+    std::string chunk_text;
+    std::size_t chunk_index;
+    double distance;
+};
+
+std::vector<SemanticResult> search_semantic(
+    const std::filesystem::path& db_path,
+    const std::vector<char>& query_embedding_bytes,
+    int top_k,
+    std::error_code& ec);
+
 // Full rebuild: wipes and rewrites the entire database. Used nowhere anymore in main.cpp (v0.6 replaced this
 // flow with sync_index), but kept available/tested since it's a simpler, known-correct baseline.
 bool save_index(const std::filesystem::path& db_path,
@@ -62,3 +77,6 @@ bool sync_index(const std::filesystem::path& db_path,
                  const std::vector<ChunkRecord>& new_chunks,   // NEW (v1.0) parameter
                  const std::vector<DocID>& deleted_ids,
                  std::error_code& ec);
+
+
+bool test_load_vec_extension(const std::filesystem::path& db_path, std::error_code& ec);

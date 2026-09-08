@@ -250,25 +250,52 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
     return 0;
 }
 
-} // namespace
+int run_search_semantic(const std::string& query, const std::filesystem::path& db_path) {
+    std::error_code ec;
+    auto embedding = get_query_embedding(query, ec);
+    if (ec) {
+        std::cerr << "Could not get embedding (is the embedding server running?): "
+                   << ec.message() << "\n";
+        return 1;
+    }
 
-int main(int argc, char* argv[]) {
+    auto query_bytes = serialize_float_vector(embedding);
+    auto results = search_semantic(db_path, query_bytes, 5, ec);
+    if (ec) {
+        std::cerr << "Semantic search failed: " << ec.message() << "\n";
+        return 1;
+    }
 
-    if (argc > 2 && std::string(argv[1]) == "test-embed") {
-        std::error_code ec;
-        auto vec = get_query_embedding(argv[2], ec);
-        if (ec) {
-            std::cerr << "Error: " << ec.message() << "\n";
-            return 1;
-        }
-        std::cout << "Got embedding with " << vec.size() << " dimensions\n";
+    if (results.empty()) {
+        std::cout << "No matches.\n";
         return 0;
     }
 
+    std::cout << "Found " << results.size() << " result(s) by semantic similarity:\n\n";
+    for (const auto& r : results) {
+        // show first 120 chars of chunk text as a preview
+        std::string preview = r.chunk_text.substr(0, 120);
+        if (r.chunk_text.size() > 120) {
+            preview += "...";
+        }
+
+        std::cout << "  " << r.path.string()
+                   << " (chunk " << r.chunk_index
+                   << ", distance: " << std::fixed << std::setprecision(4) << r.distance << ")\n"
+                   << "    " << preview << "\n\n";
+    }
+
+    return 0;
+}
+
+} // namespace
+
+int main(int argc, char* argv[]) {
     if (argc < 3) {
         std::cerr << "Usage:\n"
                    << "  findx index <path>\n"
-                   << "  findx search <query>\n";
+                   << "  findx search <query>\n"
+                   << "  findx search-semantic <query>\n";
         return 1;
     }
 
@@ -283,17 +310,25 @@ int main(int argc, char* argv[]) {
     if (command == "search") {
         std::string query;
         for (int i = 2; i < argc; ++i) {
-            if (i > 2) {
-                query += " ";
-            }
+            if (i > 2) query += " ";
             query += argv[i];
         }
         return run_search(query, db_path);
     }
 
+    if (command == "search-semantic") {
+        std::string query;
+        for (int i = 2; i < argc; ++i) {
+            if (i > 2) query += " ";
+            query += argv[i];
+        }
+        return run_search_semantic(query, db_path);
+    }
+
     std::cerr << "Unknown command: " << command << "\n"
                << "Usage:\n"
                << "  findx index <path>\n"
-               << "  findx search <query>\n";
+               << "  findx search <query>\n"
+               << "  findx search-semantic <query>\n";
     return 1;
 }

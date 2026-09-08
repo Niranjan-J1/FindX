@@ -81,3 +81,13 @@ std::vector<float> get_query_embedding(const std::string& query, std::error_code
 
     return result;
 }
+
+
+std::vector<char> serialize_float_vector(const std::vector<float>& vec) {
+    // vec0 expects the raw bytes of a contiguous float array — no framing, no metadata.
+    // std::vector<float> already stores floats contiguously, so we're just reinterpreting
+    // that memory as bytes and copying it into a byte-typed vector.
+    const char* raw = reinterpret_cast<const char*>(vec.data());
+    std::size_t byte_count = vec.size() * sizeof(float);
+    return std::vector<char>(raw, raw + byte_count);
+}

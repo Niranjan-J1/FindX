@@ -368,3 +368,129 @@ bool sync_index(const std::filesystem::path& db_path,
     sqlite3_close(db);
     return true;
 }
+
+
+bool test_load_vec_extension(const std::filesystem::path& db_path, std::error_code& ec) {
+    sqlite3* db = nullptr;
+    if (sqlite3_open(db_path.string().c_str(), &db) != SQLITE_OK) {
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return false;
+    }
+
+    if (sqlite3_enable_load_extension(db, 1) != SQLITE_OK) {
+        std::cerr << "Could not enable extension loading: " << sqlite3_errmsg(db) << "\n";
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return false;
+    }
+
+    // path to the same vec0 extension Python has been using
+    const char* vec_path = "C:\\Users\\niran\\Desktop\\FindX\\venv\\Lib\\site-packages\\sqlite_vec\\vec0";
+
+    char* err_msg = nullptr;
+    if (sqlite3_load_extension(db, vec_path, nullptr, &err_msg) != SQLITE_OK) {
+        std::cerr << "Could not load vec extension: " << (err_msg ? err_msg : "unknown") << "\n";
+        sqlite3_free(err_msg);
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return false;
+    }
+
+    // simplest possible check that the extension actually works — count rows in chunk_vectors
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db, "SELECT COUNT(*) FROM chunk_vectors;", -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Query prepare failed: " << sqlite3_errmsg(db) << "\n";
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return false;
+    }
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::cout << "chunk_vectors row count: " << sqlite3_column_int(stmt, 0) << "\n";
+    }
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return true;
+}
+
+std::vector<SemanticResult> search_semantic(
+    const std::filesystem::path& db_path,
+    const std::vector<char>& query_embedding_bytes,
+    int top_k,
+    std::error_code& ec)
+{
+    std::vector<SemanticResult> results;
+
+    sqlite3* db = nullptr;
+    if (sqlite3_open(db_path.string().c_str(), &db) != SQLITE_OK) {
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return results;
+    }
+
+    if (sqlite3_enable_load_extension(db, 1) != SQLITE_OK) {
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return results;
+    }
+
+    const char* vec_path = "C:\\Users\\niran\\Desktop\\FindX\\venv\\Lib\\site-packages\\sqlite_vec\\vec0";
+    char* ext_err = nullptr;
+    if (sqlite3_load_extension(db, vec_path, nullptr, &ext_err) != SQLITE_OK) {
+        std::cerr << "Could not load vec extension: " << (ext_err ? ext_err : "unknown") << "\n";
+        sqlite3_free(ext_err);
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return results;
+    }
+
+    // same CTE-based query structure we debugged in Python —
+    // KNN resolves fully inside the CTE before any joins happen
+    const char* sql =
+        "WITH knn_matches AS ("
+        "  SELECT chunk_id, distance"
+        "  FROM chunk_vectors"
+        "  WHERE embedding MATCH ?"
+        "  AND k = ?"
+        ")"
+        "SELECT documents.id, documents.path, chunks.text, chunks.chunk_index, knn_matches.distance "
+        "FROM knn_matches "
+        "JOIN chunks ON chunks.id = knn_matches.chunk_id "
+        "JOIN documents ON documents.id = chunks.doc_id "
+        "ORDER BY knn_matches.distance;";
+
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "KNN query prepare failed: " << sqlite3_errmsg(db) << "\n";
+        ec = std::make_error_code(std::errc::io_error);
+        sqlite3_close(db);
+        return results;
+    }
+
+    // bind the raw embedding bytes — SQLITE_STATIC is safe here because stmt
+    // is fully consumed before query_embedding_bytes could ever go out of scope
+    sqlite3_bind_blob(stmt, 1, query_embedding_bytes.data(),
+                       static_cast<int>(query_embedding_bytes.size()), SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, top_k);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        SemanticResult r;
+        r.doc_id = static_cast<DocID>(sqlite3_column_int64(stmt, 0));
+
+        const unsigned char* path_text = sqlite3_column_text(stmt, 1);
+        r.path = std::filesystem::path(reinterpret_cast<const char*>(path_text));
+
+        const unsigned char* chunk_text = sqlite3_column_text(stmt, 2);
+        r.chunk_text = reinterpret_cast<const char*>(chunk_text);
+
+        r.chunk_index = static_cast<std::size_t>(sqlite3_column_int(stmt, 3));
+        r.distance = sqlite3_column_double(stmt, 4);
+
+        results.push_back(r);
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return results;
+}
