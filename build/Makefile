@@ -248,6 +248,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/ollama_client.obj: src/ollama_client.cpp.obj
+.PHONY : src/ollama_client.obj
+
+# target to build an object file
+src/ollama_client.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ollama_client.cpp.obj
+.PHONY : src/ollama_client.cpp.obj
+
+src/ollama_client.i: src/ollama_client.cpp.i
+.PHONY : src/ollama_client.i
+
+# target to preprocess a source file
+src/ollama_client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ollama_client.cpp.i
+.PHONY : src/ollama_client.cpp.i
+
+src/ollama_client.s: src/ollama_client.cpp.s
+.PHONY : src/ollama_client.s
+
+# target to generate assembly for a file
+src/ollama_client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/ollama_client.cpp.s
+.PHONY : src/ollama_client.cpp.s
+
 src/ranker.obj: src/ranker.cpp.obj
 .PHONY : src/ranker.obj
 
@@ -368,6 +392,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/ollama_client.obj
+	@echo ... src/ollama_client.i
+	@echo ... src/ollama_client.s
 	@echo ... src/ranker.obj
 	@echo ... src/ranker.i
 	@echo ... src/ranker.s

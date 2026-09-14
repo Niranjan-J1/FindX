@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/niran/Desktop/FindX/src/embed_client.cpp" "CMakeFiles/findx.dir/src/embed_client.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/embed_client.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/index.cpp" "CMakeFiles/findx.dir/src/index.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/index.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/main.cpp" "CMakeFiles/findx.dir/src/main.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/main.cpp.obj.d"
+  "C:/Users/niran/Desktop/FindX/src/ollama_client.cpp" "CMakeFiles/findx.dir/src/ollama_client.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/ollama_client.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/ranker.cpp" "CMakeFiles/findx.dir/src/ranker.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/ranker.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/reader.cpp" "CMakeFiles/findx.dir/src/reader.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/reader.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/storage.cpp" "CMakeFiles/findx.dir/src/storage.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/storage.cpp.obj.d"

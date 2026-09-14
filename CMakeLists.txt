@@ -15,6 +15,7 @@ add_executable(findx
     src/storage.cpp
     src/chunker.cpp
     src/embed_client.cpp 
+    src/ollama_client.cpp
 )
 
 find_package(SQLite3)

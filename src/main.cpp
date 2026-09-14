@@ -7,6 +7,7 @@
 #include "threadsafe_queue.h"
 #include "chunker.h"
 #include "embed_client.h"
+#include "ollama_client.h"
 
 #include <iostream>
 #include <string>
@@ -22,6 +23,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <sstream>
 
 namespace {
 
@@ -216,7 +218,6 @@ int run_index(const std::filesystem::path& root, const std::filesystem::path& db
 }
 
 int run_search(const std::string& query, const std::filesystem::path& db_path) {
-    // BM25 keyword search — always runs
     std::vector<DocumentRecord> documents;
     InvertedIndex index;
 
@@ -233,7 +234,6 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
         bm25_results = rank_bm25(index, query_tokens);
     }
 
-    // semantic search — attempted, but falls back gracefully if server is down
     std::vector<SemanticResult> semantic_results;
     bool semantic_available = false;
 
@@ -272,13 +272,114 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
     return 0;
 }
 
+int run_ask(const std::string& question, const std::filesystem::path& db_path) {
+    // Step 1: hybrid retrieval — same as run_search, reused
+    std::vector<DocumentRecord> documents;
+    InvertedIndex index;
+
+    std::error_code ec;
+    if (!load_index(db_path, documents, index, ec)) {
+        std::cerr << "Could not load index. Run 'findx index <path>' first.\n";
+        return 1;
+    }
+
+    std::vector<std::string> query_tokens = tokenize(question);
+    std::vector<ScoredDocument> bm25_results;
+    if (!query_tokens.empty()) {
+        bm25_results = rank_bm25(index, query_tokens);
+    }
+
+    std::vector<SemanticResult> semantic_results;
+    std::error_code embed_ec;
+    auto embedding = get_query_embedding(question, embed_ec);
+    if (!embed_ec && !embedding.empty()) {
+        auto query_bytes = serialize_float_vector(embedding);
+        std::error_code search_ec;
+        semantic_results = search_semantic(db_path, query_bytes, 10, search_ec);
+    }
+
+    auto hybrid = merge_hybrid(bm25_results, documents, semantic_results, 5);
+
+    if (hybrid.empty()) {
+        std::cout << "No relevant sources found for that question.\n";
+        return 0;
+    }
+
+    // Step 2: build the prompt with numbered sources
+    std::ostringstream prompt;
+    prompt << "You are a helpful assistant that answers questions based ONLY on the provided sources. "
+           << "Cite sources using [1], [2], etc. after each claim. "
+           << "If the sources don't contain enough information, say so.\n\n";
+
+    // collect unique sources for citation display later
+    struct Source {
+        std::filesystem::path path;
+        std::string preview;
+    };
+    std::vector<Source> sources;
+    std::unordered_map<std::string, std::size_t> seen_paths;
+
+    for (const auto& r : hybrid) {
+        std::string path_str = r.path.string();
+        if (seen_paths.find(path_str) == seen_paths.end()) {
+            std::size_t num = sources.size() + 1;
+            seen_paths[path_str] = num;
+            sources.push_back(Source{ r.path, r.chunk_preview });
+        }
+    }
+
+    // attach source content to the prompt
+    for (const auto& r : hybrid) {
+        std::string path_str = r.path.string();
+        std::size_t num = seen_paths[path_str];
+
+        // use full chunk text from semantic results where available
+        std::string content = r.chunk_preview;
+        for (const auto& sr : semantic_results) {
+            if (sr.path.string() == path_str && sr.chunk_text.size() > content.size()) {
+                content = sr.chunk_text;
+            }
+        }
+
+        prompt << "[Source " << num << ": " << r.path.filename().string() << "]\n"
+               << content << "\n\n";
+    }
+
+    prompt << "Question: " << question << "\n"
+           << "Answer:";
+
+    // Step 3: send to Ollama
+    std::cout << "Thinking...\n\n";
+
+    std::error_code ollama_ec;
+    std::string answer = query_ollama(prompt.str(), ollama_ec);
+    if (ollama_ec) {
+        std::cerr << "Could not reach Ollama (is it running?): " << ollama_ec.message() << "\n";
+        return 1;
+    }
+
+    // Step 4: print the answer, then the source list
+    std::cout << answer << "\n\n";
+    std::cout << "--- Sources ---\n";
+    for (std::size_t i = 0; i < sources.size(); ++i) {
+        std::cout << "[" << (i + 1) << "] " << sources[i].path.string() << "\n";
+        if (!sources[i].preview.empty()) {
+            std::cout << "    " << sources[i].preview << "\n";
+        }
+    }
+    std::cout << "\n";
+
+    return 0;
+}
+
 } // namespace
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         std::cerr << "Usage:\n"
                    << "  findx index <path>\n"
-                   << "  findx search <query>\n";
+                   << "  findx search <query>\n"
+                   << "  findx ask <question>\n";
         return 1;
     }
 
@@ -299,9 +400,19 @@ int main(int argc, char* argv[]) {
         return run_search(query, db_path);
     }
 
+    if (command == "ask") {
+        std::string question;
+        for (int i = 2; i < argc; ++i) {
+            if (i > 2) question += " ";
+            question += argv[i];
+        }
+        return run_ask(question, db_path);
+    }
+
     std::cerr << "Unknown command: " << command << "\n"
                << "Usage:\n"
                << "  findx index <path>\n"
-               << "  findx search <query>\n";
+               << "  findx search <query>\n"
+               << "  findx ask <question>\n";
     return 1;
 }

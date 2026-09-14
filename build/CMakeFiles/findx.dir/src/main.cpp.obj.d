@@ -208,6 +208,7 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_relops.h \
  C:\Users\niran\Desktop\FindX\src\chunker.h \
  C:\Users\niran\Desktop\FindX\src\embed_client.h \
+ C:\Users\niran\Desktop\FindX\src\ollama_client.h \
  C:/msys64/mingw64/include/c++/15.2.0/iostream \
  C:/msys64/mingw64/include/c++/15.2.0/array \
  C:/msys64/mingw64/include/c++/15.2.0/compare \
