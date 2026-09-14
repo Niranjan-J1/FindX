@@ -67,3 +67,64 @@ void InvertedIndex::set_posting(const std::string& term, DocID id, int count) {
 void InvertedIndex::set_document_length(DocID id, std::size_t length) {
     doc_lengths_[id] = length;
 }
+
+std::vector<HybridResult> merge_hybrid(
+    const std::vector<ScoredDocument>& bm25_results,
+    const std::vector<DocumentRecord>& documents,
+    const std::vector<SemanticResult>& semantic_results,
+    std::size_t max_results)
+{
+    constexpr double K = 60.0;
+
+    // accumulate RRF scores per doc_id
+    std::unordered_map<DocID, double> rrf_scores;
+    std::unordered_map<DocID, std::filesystem::path> paths;
+    std::unordered_map<DocID, std::string> previews;
+
+    // BM25 results are already sorted by score descending — rank is just position
+    for (std::size_t rank = 0; rank < bm25_results.size(); ++rank) {
+        DocID id = bm25_results[rank].id;
+        rrf_scores[id] += 1.0 / (K + static_cast<double>(rank + 1));
+        if (id < documents.size()) {
+            paths[id] = documents[id].path;
+        }
+    }
+
+    // semantic results are already sorted by distance ascending — rank is just position
+    for (std::size_t rank = 0; rank < semantic_results.size(); ++rank) {
+        DocID id = semantic_results[rank].doc_id;
+        rrf_scores[id] += 1.0 / (K + static_cast<double>(rank + 1));
+        paths[id] = semantic_results[rank].path;
+
+        // keep the best (first seen) chunk preview per document
+        if (previews.find(id) == previews.end()) {
+            std::string preview = semantic_results[rank].chunk_text.substr(0, 120);
+            if (semantic_results[rank].chunk_text.size() > 120) {
+                preview += "...";
+            }
+            previews[id] = preview;
+        }
+    }
+
+    // collect and sort by RRF score descending
+    std::vector<HybridResult> results;
+    for (const auto& [id, score] : rrf_scores) {
+        HybridResult r;
+        r.doc_id = id;
+        r.path = paths[id];
+        r.chunk_preview = previews.count(id) ? previews[id] : "";
+        r.rrf_score = score;
+        results.push_back(r);
+    }
+
+    std::sort(results.begin(), results.end(),
+        [](const HybridResult& a, const HybridResult& b) {
+            return a.rrf_score > b.rrf_score;
+        });
+
+    if (results.size() > max_results) {
+        results.resize(max_results);
+    }
+
+    return results;
+}
