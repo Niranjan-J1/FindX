@@ -72,6 +72,7 @@ CMakeFiles/findx.dir/codegen:
 .PHONY : CMakeFiles/findx.dir/codegen
 
 CMakeFiles/findx.dir/src/main.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/main.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/main.cpp.obj: C:/Users/niran/Desktop/FindX/src/main.cpp
 CMakeFiles/findx.dir/src/main.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/findx.dir/src/main.cpp.obj"
@@ -86,6 +87,7 @@ CMakeFiles/findx.dir/src/main.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\main.cpp -o CMakeFiles\findx.dir\src\main.cpp.s
 
 CMakeFiles/findx.dir/src/crawler.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/crawler.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/crawler.cpp.obj: C:/Users/niran/Desktop/FindX/src/crawler.cpp
 CMakeFiles/findx.dir/src/crawler.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/findx.dir/src/crawler.cpp.obj"
@@ -100,6 +102,7 @@ CMakeFiles/findx.dir/src/crawler.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\crawler.cpp -o CMakeFiles\findx.dir\src\crawler.cpp.s
 
 CMakeFiles/findx.dir/src/reader.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/reader.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/reader.cpp.obj: C:/Users/niran/Desktop/FindX/src/reader.cpp
 CMakeFiles/findx.dir/src/reader.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/findx.dir/src/reader.cpp.obj"
@@ -114,6 +117,7 @@ CMakeFiles/findx.dir/src/reader.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\reader.cpp -o CMakeFiles\findx.dir\src\reader.cpp.s
 
 CMakeFiles/findx.dir/src/tokenizer.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/tokenizer.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/tokenizer.cpp.obj: C:/Users/niran/Desktop/FindX/src/tokenizer.cpp
 CMakeFiles/findx.dir/src/tokenizer.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/findx.dir/src/tokenizer.cpp.obj"
@@ -128,6 +132,7 @@ CMakeFiles/findx.dir/src/tokenizer.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\tokenizer.cpp -o CMakeFiles\findx.dir\src\tokenizer.cpp.s
 
 CMakeFiles/findx.dir/src/index.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/index.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/index.cpp.obj: C:/Users/niran/Desktop/FindX/src/index.cpp
 CMakeFiles/findx.dir/src/index.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/findx.dir/src/index.cpp.obj"
@@ -142,6 +147,7 @@ CMakeFiles/findx.dir/src/index.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\index.cpp -o CMakeFiles\findx.dir\src\index.cpp.s
 
 CMakeFiles/findx.dir/src/ranker.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/ranker.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/ranker.cpp.obj: C:/Users/niran/Desktop/FindX/src/ranker.cpp
 CMakeFiles/findx.dir/src/ranker.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/findx.dir/src/ranker.cpp.obj"
@@ -156,6 +162,7 @@ CMakeFiles/findx.dir/src/ranker.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\ranker.cpp -o CMakeFiles\findx.dir\src\ranker.cpp.s
 
 CMakeFiles/findx.dir/src/storage.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/storage.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/storage.cpp.obj: C:/Users/niran/Desktop/FindX/src/storage.cpp
 CMakeFiles/findx.dir/src/storage.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/findx.dir/src/storage.cpp.obj"
@@ -170,6 +177,7 @@ CMakeFiles/findx.dir/src/storage.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\storage.cpp -o CMakeFiles\findx.dir\src\storage.cpp.s
 
 CMakeFiles/findx.dir/src/chunker.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/chunker.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/chunker.cpp.obj: C:/Users/niran/Desktop/FindX/src/chunker.cpp
 CMakeFiles/findx.dir/src/chunker.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/findx.dir/src/chunker.cpp.obj"
@@ -184,6 +192,7 @@ CMakeFiles/findx.dir/src/chunker.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\chunker.cpp -o CMakeFiles\findx.dir\src\chunker.cpp.s
 
 CMakeFiles/findx.dir/src/embed_client.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/embed_client.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/embed_client.cpp.obj: C:/Users/niran/Desktop/FindX/src/embed_client.cpp
 CMakeFiles/findx.dir/src/embed_client.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/findx.dir/src/embed_client.cpp.obj"
@@ -198,6 +207,7 @@ CMakeFiles/findx.dir/src/embed_client.cpp.s: cmake_force
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\embed_client.cpp -o CMakeFiles\findx.dir\src\embed_client.cpp.s
 
 CMakeFiles/findx.dir/src/ollama_client.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/ollama_client.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
 CMakeFiles/findx.dir/src/ollama_client.cpp.obj: C:/Users/niran/Desktop/FindX/src/ollama_client.cpp
 CMakeFiles/findx.dir/src/ollama_client.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/findx.dir/src/ollama_client.cpp.obj"
@@ -211,6 +221,21 @@ CMakeFiles/findx.dir/src/ollama_client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/findx.dir/src/ollama_client.cpp.s"
 	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\ollama_client.cpp -o CMakeFiles\findx.dir\src\ollama_client.cpp.s
 
+CMakeFiles/findx.dir/src/app.cpp.obj: CMakeFiles/findx.dir/flags.make
+CMakeFiles/findx.dir/src/app.cpp.obj: CMakeFiles/findx.dir/includes_CXX.rsp
+CMakeFiles/findx.dir/src/app.cpp.obj: C:/Users/niran/Desktop/FindX/src/app.cpp
+CMakeFiles/findx.dir/src/app.cpp.obj: CMakeFiles/findx.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/findx.dir/src/app.cpp.obj"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/findx.dir/src/app.cpp.obj -MF CMakeFiles\findx.dir\src\app.cpp.obj.d -o CMakeFiles\findx.dir\src\app.cpp.obj -c C:\Users\niran\Desktop\FindX\src\app.cpp
+
+CMakeFiles/findx.dir/src/app.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/findx.dir/src/app.cpp.i"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\niran\Desktop\FindX\src\app.cpp > CMakeFiles\findx.dir\src\app.cpp.i
+
+CMakeFiles/findx.dir/src/app.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/findx.dir/src/app.cpp.s"
+	C:\msys64\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\niran\Desktop\FindX\src\app.cpp -o CMakeFiles\findx.dir\src\app.cpp.s
+
 # Object files for target findx
 findx_OBJECTS = \
 "CMakeFiles/findx.dir/src/main.cpp.obj" \
@@ -222,7 +247,8 @@ findx_OBJECTS = \
 "CMakeFiles/findx.dir/src/storage.cpp.obj" \
 "CMakeFiles/findx.dir/src/chunker.cpp.obj" \
 "CMakeFiles/findx.dir/src/embed_client.cpp.obj" \
-"CMakeFiles/findx.dir/src/ollama_client.cpp.obj"
+"CMakeFiles/findx.dir/src/ollama_client.cpp.obj" \
+"CMakeFiles/findx.dir/src/app.cpp.obj"
 
 # External object files for target findx
 findx_EXTERNAL_OBJECTS =
@@ -237,12 +263,13 @@ findx.exe: CMakeFiles/findx.dir/src/storage.cpp.obj
 findx.exe: CMakeFiles/findx.dir/src/chunker.cpp.obj
 findx.exe: CMakeFiles/findx.dir/src/embed_client.cpp.obj
 findx.exe: CMakeFiles/findx.dir/src/ollama_client.cpp.obj
+findx.exe: CMakeFiles/findx.dir/src/app.cpp.obj
 findx.exe: CMakeFiles/findx.dir/build.make
 findx.exe: C:/msys64/mingw64/lib/libsqlite3.dll.a
 findx.exe: CMakeFiles/findx.dir/linkLibs.rsp
 findx.exe: CMakeFiles/findx.dir/objects1.rsp
 findx.exe: CMakeFiles/findx.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable findx.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\niran\Desktop\FindX\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable findx.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\findx.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

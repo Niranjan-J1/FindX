@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "C:/Users/niran/Desktop/FindX/src/app.cpp" "CMakeFiles/findx.dir/src/app.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/app.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/chunker.cpp" "CMakeFiles/findx.dir/src/chunker.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/chunker.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/crawler.cpp" "CMakeFiles/findx.dir/src/crawler.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/crawler.cpp.obj.d"
   "C:/Users/niran/Desktop/FindX/src/embed_client.cpp" "CMakeFiles/findx.dir/src/embed_client.cpp.obj" "gcc" "CMakeFiles/findx.dir/src/embed_client.cpp.obj.d"

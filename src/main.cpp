@@ -8,6 +8,7 @@
 #include "chunker.h"
 #include "embed_client.h"
 #include "ollama_client.h"
+#include "app.h"
 
 #include <iostream>
 #include <string>
@@ -460,16 +461,30 @@ int run_ask(const std::string& question, const std::string& mode, const std::fil
 } // namespace
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
+    if (argc < 2) {
         std::cerr << "Usage:\n"
                    << "  findx index <path>\n"
                    << "  findx search <query>\n"
-                   << "  findx ask [--fast|--deep] <question>\n";
+                   << "  findx ask [--fast|--deep] <question>\n"
+                   << "  findx app\n";
         return 1;
     }
 
     std::string command = argv[1];
     std::filesystem::path db_path = "findx.db";
+
+    if (command == "app") {
+        return run_app();
+    }
+
+    if (argc < 3) {
+        std::cerr << "Usage:\n"
+                   << "  findx index <path>\n"
+                   << "  findx search <query>\n"
+                   << "  findx ask [--fast|--deep] <question>\n"
+                   << "  findx app\n";
+        return 1;
+    }
 
     if (command == "index") {
         std::filesystem::path root = argv[2];
@@ -514,6 +529,7 @@ int main(int argc, char* argv[]) {
                << "Usage:\n"
                << "  findx index <path>\n"
                << "  findx search <query>\n"
-               << "  findx ask [--fast|--deep] <question>\n";
+               << "  findx ask [--fast|--deep] <question>\n"
+               << "  findx app\n";
     return 1;
 }

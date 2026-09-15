@@ -128,6 +128,30 @@ findx/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/build
 .PHONY : findx/fast
 
+src/app.obj: src/app.cpp.obj
+.PHONY : src/app.obj
+
+# target to build an object file
+src/app.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/app.cpp.obj
+.PHONY : src/app.cpp.obj
+
+src/app.i: src/app.cpp.i
+.PHONY : src/app.i
+
+# target to preprocess a source file
+src/app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/app.cpp.i
+.PHONY : src/app.cpp.i
+
+src/app.s: src/app.cpp.s
+.PHONY : src/app.s
+
+# target to generate assembly for a file
+src/app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/app.cpp.s
+.PHONY : src/app.cpp.s
+
 src/chunker.obj: src/chunker.cpp.obj
 .PHONY : src/chunker.obj
 
@@ -377,6 +401,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... findx
+	@echo ... src/app.obj
+	@echo ... src/app.i
+	@echo ... src/app.s
 	@echo ... src/chunker.obj
 	@echo ... src/chunker.i
 	@echo ... src/chunker.s

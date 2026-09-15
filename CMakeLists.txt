@@ -14,8 +14,14 @@ add_executable(findx
     src/ranker.cpp
     src/storage.cpp
     src/chunker.cpp
-    src/embed_client.cpp 
+    src/embed_client.cpp
     src/ollama_client.cpp
+    src/app.cpp
+)
+
+target_include_directories(findx PRIVATE
+    libs/webview
+    libs/webview2/build/native/include
 )
 
 find_package(SQLite3)
@@ -33,3 +39,4 @@ endif()
 find_package(Threads REQUIRED)
 target_link_libraries(findx PRIVATE Threads::Threads)
 target_link_libraries(findx PRIVATE ws2_32)
+target_link_libraries(findx PRIVATE advapi32 ole32 shell32 shlwapi user32 version)

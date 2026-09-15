@@ -1,1 +1,1 @@
- C:/msys64/mingw64/lib/libsqlite3.dll.a -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
+ C:/msys64/mingw64/lib/libsqlite3.dll.a -lws2_32 -ladvapi32 -lole32 -lshell32 -lshlwapi -luser32 -lversion -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
