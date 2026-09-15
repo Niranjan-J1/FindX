@@ -275,36 +275,73 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
     return 0;
 }
 
-// pick model based on query complexity — simple heuristic for now
-std::string pick_model(const std::string& question, std::size_t source_count) {
-    // longer questions or many sources suggest complex reasoning needed
-    std::size_t word_count = 0;
-    bool in_word = false;
-    for (char c : question) {
-        if (std::isspace(static_cast<unsigned char>(c))) {
-            in_word = false;
-        } else if (!in_word) {
-            in_word = true;
-            ++word_count;
-        }
+struct RoutingDecision {
+    std::string model;
+    std::string reason;
+};
+
+RoutingDecision auto_pick_model(
+    const std::vector<HybridResult>& hybrid,
+    const std::vector<SemanticResult>& semantic_results,
+    const std::vector<ScoredDocument>& bm25_results)
+{
+    // Signal 1: how confident is the best semantic match?
+    // low distance = strong match = simpler answer likely sufficient
+    double best_distance = 999.0;
+    if (!semantic_results.empty()) {
+        best_distance = semantic_results[0].distance;
     }
 
-    // complexity signals: multi-part questions, comparison keywords, many sources
-    bool complex = word_count > 12 || source_count > 3;
-    if (!complex) {
-        for (const auto& keyword : {"compare", "difference", "between", "relate",
-                                      "contrast", "analyze", "explain how", "why does"}) {
-            if (question.find(keyword) != std::string::npos) {
-                complex = true;
+    // Signal 2: how concentrated are sources?
+    // all results from one file = focused question, few files = simpler
+    std::unordered_set<std::string> unique_source_files;
+    for (const auto& r : hybrid) {
+        unique_source_files.insert(r.path.string());
+    }
+
+    // Signal 3: do BM25 and semantic agree on the top result?
+    bool systems_agree = false;
+    if (!bm25_results.empty() && !semantic_results.empty() && !hybrid.empty()) {
+        // check if the same doc appears in top 2 of both systems
+        std::unordered_set<DocID> bm25_top;
+        for (std::size_t i = 0; i < std::min(bm25_results.size(), static_cast<std::size_t>(2)); ++i) {
+            bm25_top.insert(bm25_results[i].id);
+        }
+        for (std::size_t i = 0; i < std::min(semantic_results.size(), static_cast<std::size_t>(2)); ++i) {
+            if (bm25_top.count(semantic_results[i].doc_id)) {
+                systems_agree = true;
                 break;
             }
         }
     }
 
-    return complex ? MODEL_STRONG : MODEL_FAST;
+    // Decision logic:
+    // strong single-source match with system agreement → fast model handles this easily
+    // weak/scattered matches or system disagreement → harder synthesis, use strong model
+    bool use_fast = false;
+    std::string reason;
+
+    if (best_distance < 1.1 && unique_source_files.size() <= 2 && systems_agree) {
+        use_fast = true;
+        reason = "strong focused match, both systems agree";
+    } else if (best_distance < 1.05 && unique_source_files.size() <= 2) {
+        use_fast = true;
+        reason = "very strong single-source match";
+    } else if (unique_source_files.size() >= 4 || best_distance > 1.3) {
+        use_fast = false;
+        reason = "scattered sources or weak matches, needs deeper reasoning";
+    } else {
+        use_fast = false;
+        reason = "moderate complexity, using stronger model for quality";
+    }
+
+    return RoutingDecision{
+        use_fast ? MODEL_FAST : MODEL_STRONG,
+        reason
+    };
 }
 
-int run_ask(const std::string& question, const std::filesystem::path& db_path) {
+int run_ask(const std::string& question, const std::string& mode, const std::filesystem::path& db_path) {
     // Step 1: hybrid retrieval
     std::vector<DocumentRecord> documents;
     InvertedIndex index;
@@ -377,10 +414,21 @@ int run_ask(const std::string& question, const std::filesystem::path& db_path) {
     prompt << "Question: " << question << "\n"
            << "Answer:";
 
-    // Step 3: pick model and stream the response
-    std::string model = pick_model(question, hybrid.size());
-    std::cout << "[using " << model << "]\n\n";
+    // Step 3: pick model
+    std::string model;
+    if (mode == "fast") {
+        model = MODEL_FAST;
+        std::cout << "[--fast: using " << model << "]\n\n";
+    } else if (mode == "deep") {
+        model = MODEL_STRONG;
+        std::cout << "[--deep: using " << model << "]\n\n";
+    } else {
+        auto decision = auto_pick_model(hybrid, semantic_results, bm25_results);
+        model = decision.model;
+        std::cout << "[auto: using " << model << " — " << decision.reason << "]\n\n";
+    }
 
+    // Step 4: stream the response
     std::string full_answer;
     std::error_code ollama_ec;
 
@@ -396,7 +444,7 @@ int run_ask(const std::string& question, const std::filesystem::path& db_path) {
         return 1;
     }
 
-    // Step 4: print sources after the streamed answer
+    // Step 5: print sources
     std::cout << "\n\n--- Sources ---\n";
     for (std::size_t i = 0; i < sources.size(); ++i) {
         std::cout << "[" << (i + 1) << "] " << sources[i].path.string() << "\n";
@@ -416,7 +464,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage:\n"
                    << "  findx index <path>\n"
                    << "  findx search <query>\n"
-                   << "  findx ask <question>\n";
+                   << "  findx ask [--fast|--deep] <question>\n";
         return 1;
     }
 
@@ -438,18 +486,34 @@ int main(int argc, char* argv[]) {
     }
 
     if (command == "ask") {
+        std::string mode = "auto";
+        int query_start = 2;
+
+        if (argc > 2 && std::string(argv[2]) == "--fast") {
+            mode = "fast";
+            query_start = 3;
+        } else if (argc > 2 && std::string(argv[2]) == "--deep") {
+            mode = "deep";
+            query_start = 3;
+        }
+
+        if (query_start >= argc) {
+            std::cerr << "Missing question after " << argv[2] << "\n";
+            return 1;
+        }
+
         std::string question;
-        for (int i = 2; i < argc; ++i) {
-            if (i > 2) question += " ";
+        for (int i = query_start; i < argc; ++i) {
+            if (i > query_start) question += " ";
             question += argv[i];
         }
-        return run_ask(question, db_path);
+        return run_ask(question, mode, db_path);
     }
 
     std::cerr << "Unknown command: " << command << "\n"
                << "Usage:\n"
                << "  findx index <path>\n"
                << "  findx search <query>\n"
-               << "  findx ask <question>\n";
+               << "  findx ask [--fast|--deep] <question>\n";
     return 1;
 }
