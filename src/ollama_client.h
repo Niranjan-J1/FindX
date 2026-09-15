@@ -1,6 +1,8 @@
 #pragma once
-
+#include <functional>
 #include <string>
 #include <system_error>
 
-std::string query_ollama(const std::string& prompt, std::error_code& ec);
+void query_ollama_stream(const std::string& prompt, const std::string& model,
+                          std::function<void(const std::string&)> on_token,
+                          std::error_code& ec);

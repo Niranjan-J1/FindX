@@ -209,9 +209,11 @@ CMakeFiles/findx.dir/src/main.cpp.obj: \
  C:\Users\niran\Desktop\FindX\src\chunker.h \
  C:\Users\niran\Desktop\FindX\src\embed_client.h \
  C:\Users\niran\Desktop\FindX\src\ollama_client.h \
- C:/msys64/mingw64/include/c++/15.2.0/iostream \
+ C:/msys64/mingw64/include/c++/15.2.0/functional \
+ C:/msys64/mingw64/include/c++/15.2.0/bits/std_function.h \
  C:/msys64/mingw64/include/c++/15.2.0/array \
  C:/msys64/mingw64/include/c++/15.2.0/compare \
+ C:/msys64/mingw64/include/c++/15.2.0/iostream \
  C:/msys64/mingw64/include/c++/15.2.0/chrono \
  C:/msys64/mingw64/include/c++/15.2.0/unordered_set \
  C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h \

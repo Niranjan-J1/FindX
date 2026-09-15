@@ -10,7 +10,6 @@ namespace {
 constexpr const char* OLLAMA_HOST = "127.0.0.1";
 constexpr int OLLAMA_PORT = 11434;
 
-// minimal JSON string escaping — handles the characters that would break a JSON value
 std::string escape_json(const std::string& input) {
     std::string result;
     result.reserve(input.size());
@@ -27,8 +26,6 @@ std::string escape_json(const std::string& input) {
     return result;
 }
 
-// extract the value of a given key from a flat JSON object — intentionally simple,
-// not a real JSON parser, just enough for Ollama's response format
 std::string extract_json_string(const std::string& json, const std::string& key) {
     std::string search = "\"" + key + "\":\"";
     auto pos = json.find(search);
@@ -49,20 +46,19 @@ std::string extract_json_string(const std::string& json, const std::string& key)
     return result;
 }
 
-} // namespace
-
-std::string query_ollama(const std::string& prompt, std::error_code& ec) {
+// shared connection setup — both streaming and non-streaming use the same socket init
+SOCKET connect_to_ollama(std::error_code& ec) {
     WSADATA wsa_data;
     if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
         ec = std::make_error_code(std::errc::io_error);
-        return "";
+        return INVALID_SOCKET;
     }
 
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
         ec = std::make_error_code(std::errc::io_error);
         WSACleanup();
-        return "";
+        return INVALID_SOCKET;
     }
 
     sockaddr_in addr{};
@@ -74,18 +70,21 @@ std::string query_ollama(const std::string& prompt, std::error_code& ec) {
         ec = std::make_error_code(std::errc::connection_refused);
         closesocket(sock);
         WSACleanup();
-        return "";
+        return INVALID_SOCKET;
     }
 
-    // build the JSON request body — stream:false gets the complete response in one piece,
-    // think:false suppresses qwen3's chain-of-thought output
-    std::string body = "{\"model\":\"qwen3:8b\","
-                        "\"prompt\":\"" + escape_json(prompt) + "\","
-                        "\"stream\":false,"
-                        "\"options\":{\"num_predict\":512},"
-                        "\"think\":false}";
+    return sock;
+}
 
-    // construct a minimal valid HTTP POST request
+bool send_request(SOCKET sock, const std::string& prompt, const std::string& model,
+                   bool stream, std::error_code& ec) {
+    std::string body = "{\"model\":\"" + model + "\","
+                        "\"prompt\":\"" + escape_json(prompt) + "\","
+                        "\"stream\":" + (stream ? "true" : "false") + ","
+                        "\"options\":{\"num_predict\":512},"
+                        "\"think\":false,"
+                        "\"keep_alive\":-1}";
+
     std::ostringstream request;
     request << "POST /api/generate HTTP/1.1\r\n"
             << "Host: 127.0.0.1:11434\r\n"
@@ -98,12 +97,37 @@ std::string query_ollama(const std::string& prompt, std::error_code& ec) {
     std::string req_str = request.str();
     if (send(sock, req_str.c_str(), static_cast<int>(req_str.size()), 0) == SOCKET_ERROR) {
         ec = std::make_error_code(std::errc::io_error);
+        return false;
+    }
+    return true;
+}
+
+// skip past HTTP headers, return everything after the blank line
+std::string skip_http_headers(SOCKET sock, std::string& buffer) {
+    while (true) {
+        auto header_end = buffer.find("\r\n\r\n");
+        if (header_end != std::string::npos) {
+            return buffer.substr(header_end + 4);
+        }
+        char temp[4096];
+        int bytes = recv(sock, temp, sizeof(temp), 0);
+        if (bytes <= 0) return "";
+        buffer.append(temp, bytes);
+    }
+}
+
+} // namespace
+
+std::string query_ollama(const std::string& prompt, const std::string& model, std::error_code& ec) {
+    SOCKET sock = connect_to_ollama(ec);
+    if (sock == INVALID_SOCKET) return "";
+
+    if (!send_request(sock, prompt, model, false, ec)) {
         closesocket(sock);
         WSACleanup();
         return "";
     }
 
-    // read the full HTTP response — loop until the connection closes
     std::string response;
     char buffer[4096];
     while (true) {
@@ -115,7 +139,6 @@ std::string query_ollama(const std::string& prompt, std::error_code& ec) {
     closesocket(sock);
     WSACleanup();
 
-    // separate HTTP headers from body — they're divided by a blank line
     auto body_start = response.find("\r\n\r\n");
     if (body_start == std::string::npos) {
         ec = std::make_error_code(std::errc::io_error);
@@ -129,4 +152,57 @@ std::string query_ollama(const std::string& prompt, std::error_code& ec) {
     }
 
     return answer;
+}
+
+void query_ollama_stream(const std::string& prompt, const std::string& model,
+                          std::function<void(const std::string&)> on_token,
+                          std::error_code& ec) {
+    SOCKET sock = connect_to_ollama(ec);
+    if (sock == INVALID_SOCKET) return;
+
+    if (!send_request(sock, prompt, model, true, ec)) {
+        closesocket(sock);
+        WSACleanup();
+        return;
+    }
+
+    // skip past HTTP headers to reach the streaming body
+    std::string raw_buffer;
+    std::string remaining = skip_http_headers(sock, raw_buffer);
+
+    // process the stream line by line — each line is one JSON object with a single token
+    while (true) {
+        // check for complete lines already in our buffer
+        auto newline_pos = remaining.find('\n');
+        while (newline_pos != std::string::npos) {
+            std::string line = remaining.substr(0, newline_pos);
+            remaining = remaining.substr(newline_pos + 1);
+
+            if (!line.empty()) {
+                // extract and emit the token immediately
+                std::string token = extract_json_string(line, "response");
+                if (!token.empty()) {
+                    on_token(token);
+                }
+
+                // check if this is the final line
+                if (line.find("\"done\":true") != std::string::npos) {
+                    closesocket(sock);
+                    WSACleanup();
+                    return;
+                }
+            }
+
+            newline_pos = remaining.find('\n');
+        }
+
+        // need more data from the socket
+        char temp[4096];
+        int bytes = recv(sock, temp, sizeof(temp), 0);
+        if (bytes <= 0) break;
+        remaining.append(temp, bytes);
+    }
+
+    closesocket(sock);
+    WSACleanup();
 }

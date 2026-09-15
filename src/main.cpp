@@ -27,6 +27,9 @@
 
 namespace {
 
+const std::string MODEL_FAST = "qwen3:1.7b";
+const std::string MODEL_STRONG = "phi4-mini";
+
 std::int64_t mtime_signature(std::filesystem::file_time_type ftime) {
     return static_cast<std::int64_t>(ftime.time_since_epoch().count());
 }
@@ -272,8 +275,37 @@ int run_search(const std::string& query, const std::filesystem::path& db_path) {
     return 0;
 }
 
+// pick model based on query complexity — simple heuristic for now
+std::string pick_model(const std::string& question, std::size_t source_count) {
+    // longer questions or many sources suggest complex reasoning needed
+    std::size_t word_count = 0;
+    bool in_word = false;
+    for (char c : question) {
+        if (std::isspace(static_cast<unsigned char>(c))) {
+            in_word = false;
+        } else if (!in_word) {
+            in_word = true;
+            ++word_count;
+        }
+    }
+
+    // complexity signals: multi-part questions, comparison keywords, many sources
+    bool complex = word_count > 12 || source_count > 3;
+    if (!complex) {
+        for (const auto& keyword : {"compare", "difference", "between", "relate",
+                                      "contrast", "analyze", "explain how", "why does"}) {
+            if (question.find(keyword) != std::string::npos) {
+                complex = true;
+                break;
+            }
+        }
+    }
+
+    return complex ? MODEL_STRONG : MODEL_FAST;
+}
+
 int run_ask(const std::string& question, const std::filesystem::path& db_path) {
-    // Step 1: hybrid retrieval — same as run_search, reused
+    // Step 1: hybrid retrieval
     std::vector<DocumentRecord> documents;
     InvertedIndex index;
 
@@ -305,13 +337,12 @@ int run_ask(const std::string& question, const std::filesystem::path& db_path) {
         return 0;
     }
 
-    // Step 2: build the prompt with numbered sources
+    // Step 2: build prompt with numbered sources
     std::ostringstream prompt;
     prompt << "You are a helpful assistant that answers questions based ONLY on the provided sources. "
            << "Cite sources using [1], [2], etc. after each claim. "
            << "If the sources don't contain enough information, say so.\n\n";
 
-    // collect unique sources for citation display later
     struct Source {
         std::filesystem::path path;
         std::string preview;
@@ -328,12 +359,10 @@ int run_ask(const std::string& question, const std::filesystem::path& db_path) {
         }
     }
 
-    // attach source content to the prompt
     for (const auto& r : hybrid) {
         std::string path_str = r.path.string();
         std::size_t num = seen_paths[path_str];
 
-        // use full chunk text from semantic results where available
         std::string content = r.chunk_preview;
         for (const auto& sr : semantic_results) {
             if (sr.path.string() == path_str && sr.chunk_text.size() > content.size()) {
@@ -348,19 +377,27 @@ int run_ask(const std::string& question, const std::filesystem::path& db_path) {
     prompt << "Question: " << question << "\n"
            << "Answer:";
 
-    // Step 3: send to Ollama
-    std::cout << "Thinking...\n\n";
+    // Step 3: pick model and stream the response
+    std::string model = pick_model(question, hybrid.size());
+    std::cout << "[using " << model << "]\n\n";
 
+    std::string full_answer;
     std::error_code ollama_ec;
-    std::string answer = query_ollama(prompt.str(), ollama_ec);
+
+    query_ollama_stream(prompt.str(), model,
+        [&full_answer](const std::string& token) {
+            std::cout << token << std::flush;
+            full_answer += token;
+        },
+        ollama_ec);
+
     if (ollama_ec) {
-        std::cerr << "Could not reach Ollama (is it running?): " << ollama_ec.message() << "\n";
+        std::cerr << "\nCould not reach Ollama (is it running?): " << ollama_ec.message() << "\n";
         return 1;
     }
 
-    // Step 4: print the answer, then the source list
-    std::cout << answer << "\n\n";
-    std::cout << "--- Sources ---\n";
+    // Step 4: print sources after the streamed answer
+    std::cout << "\n\n--- Sources ---\n";
     for (std::size_t i = 0; i < sources.size(); ++i) {
         std::cout << "[" << (i + 1) << "] " << sources[i].path.string() << "\n";
         if (!sources[i].preview.empty()) {
