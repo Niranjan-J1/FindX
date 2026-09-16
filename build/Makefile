@@ -344,6 +344,30 @@ src/reader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/reader.cpp.s
 .PHONY : src/reader.cpp.s
 
+src/registry.obj: src/registry.cpp.obj
+.PHONY : src/registry.obj
+
+# target to build an object file
+src/registry.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/registry.cpp.obj
+.PHONY : src/registry.cpp.obj
+
+src/registry.i: src/registry.cpp.i
+.PHONY : src/registry.i
+
+# target to preprocess a source file
+src/registry.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/registry.cpp.i
+.PHONY : src/registry.cpp.i
+
+src/registry.s: src/registry.cpp.s
+.PHONY : src/registry.s
+
+# target to generate assembly for a file
+src/registry.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\findx.dir\build.make CMakeFiles/findx.dir/src/registry.cpp.s
+.PHONY : src/registry.cpp.s
+
 src/storage.obj: src/storage.cpp.obj
 .PHONY : src/storage.obj
 
@@ -428,6 +452,9 @@ help:
 	@echo ... src/reader.obj
 	@echo ... src/reader.i
 	@echo ... src/reader.s
+	@echo ... src/registry.obj
+	@echo ... src/registry.i
+	@echo ... src/registry.s
 	@echo ... src/storage.obj
 	@echo ... src/storage.i
 	@echo ... src/storage.s

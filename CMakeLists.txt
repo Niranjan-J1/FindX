@@ -17,6 +17,7 @@ add_executable(findx
     src/embed_client.cpp
     src/ollama_client.cpp
     src/app.cpp
+    src/registry.cpp
 )
 
 target_include_directories(findx PRIVATE

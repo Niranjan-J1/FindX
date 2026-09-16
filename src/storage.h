@@ -7,6 +7,8 @@
 #include <vector>
 #include <cstdint>
 
+std::filesystem::path get_db_path();
+
 // One row of the "documents" table in findx.db.
 // Represents a single indexed file's identity and metadata — no file content stored here (deliberate v0.5 decision).
 struct DocumentRecord {

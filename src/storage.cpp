@@ -3,6 +3,22 @@
 #include <sqlite3.h>
 #include <iostream>
 
+
+#include <cstdlib>
+
+std::filesystem::path get_db_path() {
+    char* appdata = nullptr;
+    size_t len = 0;
+    _dupenv_s(&appdata, &len, "LOCALAPPDATA");
+    std::filesystem::path base = appdata ? appdata : ".";
+    free(appdata);
+
+    std::filesystem::path dir = base / "FindX";
+    std::filesystem::create_directories(dir);
+    return dir / "findx.db";
+}
+
+
 namespace {
 
 bool exec_sql(sqlite3* db, const char* sql, std::error_code& ec) {

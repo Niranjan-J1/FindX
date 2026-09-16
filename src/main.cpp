@@ -9,6 +9,7 @@
 #include "embed_client.h"
 #include "ollama_client.h"
 #include "app.h"
+#include "registry.h"
 
 #include <iostream>
 #include <string>
@@ -17,6 +18,7 @@
 #include <cctype>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <unordered_map>
 #include <unordered_set>
@@ -31,12 +33,13 @@ namespace {
 const std::string MODEL_FAST = "qwen3:1.7b";
 const std::string MODEL_STRONG = "phi4-mini";
 
+
 std::int64_t mtime_signature(std::filesystem::file_time_type ftime) {
     return static_cast<std::int64_t>(ftime.time_since_epoch().count());
 }
 
 bool has_indexable_extension(const std::filesystem::path& path) {
-    static const std::array<std::string, 4> allowed = { ".txt", ".md", ".cpp", ".h" };
+    static const std::array<std::string, 6> allowed = { ".txt", ".md", ".cpp", ".h", ".html", ".htm" };
 
     std::string ext = path.extension().string();
     for (auto& c : ext) {
@@ -286,24 +289,18 @@ RoutingDecision auto_pick_model(
     const std::vector<SemanticResult>& semantic_results,
     const std::vector<ScoredDocument>& bm25_results)
 {
-    // Signal 1: how confident is the best semantic match?
-    // low distance = strong match = simpler answer likely sufficient
     double best_distance = 999.0;
     if (!semantic_results.empty()) {
         best_distance = semantic_results[0].distance;
     }
 
-    // Signal 2: how concentrated are sources?
-    // all results from one file = focused question, few files = simpler
     std::unordered_set<std::string> unique_source_files;
     for (const auto& r : hybrid) {
         unique_source_files.insert(r.path.string());
     }
 
-    // Signal 3: do BM25 and semantic agree on the top result?
     bool systems_agree = false;
     if (!bm25_results.empty() && !semantic_results.empty() && !hybrid.empty()) {
-        // check if the same doc appears in top 2 of both systems
         std::unordered_set<DocID> bm25_top;
         for (std::size_t i = 0; i < std::min(bm25_results.size(), static_cast<std::size_t>(2)); ++i) {
             bm25_top.insert(bm25_results[i].id);
@@ -316,9 +313,6 @@ RoutingDecision auto_pick_model(
         }
     }
 
-    // Decision logic:
-    // strong single-source match with system agreement → fast model handles this easily
-    // weak/scattered matches or system disagreement → harder synthesis, use strong model
     bool use_fast = false;
     std::string reason;
 
@@ -343,7 +337,6 @@ RoutingDecision auto_pick_model(
 }
 
 int run_ask(const std::string& question, const std::string& mode, const std::filesystem::path& db_path) {
-    // Step 1: hybrid retrieval
     std::vector<DocumentRecord> documents;
     InvertedIndex index;
 
@@ -375,7 +368,6 @@ int run_ask(const std::string& question, const std::string& mode, const std::fil
         return 0;
     }
 
-    // Step 2: build prompt with numbered sources
     std::ostringstream prompt;
     prompt << "You are a helpful assistant that answers questions based ONLY on the provided sources. "
            << "Cite sources using [1], [2], etc. after each claim. "
@@ -415,7 +407,6 @@ int run_ask(const std::string& question, const std::string& mode, const std::fil
     prompt << "Question: " << question << "\n"
            << "Answer:";
 
-    // Step 3: pick model
     std::string model;
     if (mode == "fast") {
         model = MODEL_FAST;
@@ -429,7 +420,6 @@ int run_ask(const std::string& question, const std::string& mode, const std::fil
         std::cout << "[auto: using " << model << " — " << decision.reason << "]\n\n";
     }
 
-    // Step 4: stream the response
     std::string full_answer;
     std::error_code ollama_ec;
 
@@ -445,7 +435,6 @@ int run_ask(const std::string& question, const std::string& mode, const std::fil
         return 1;
     }
 
-    // Step 5: print sources
     std::cout << "\n\n--- Sources ---\n";
     for (std::size_t i = 0; i < sources.size(); ++i) {
         std::cout << "[" << (i + 1) << "] " << sources[i].path.string() << "\n";
@@ -466,15 +455,37 @@ int main(int argc, char* argv[]) {
                    << "  findx index <path>\n"
                    << "  findx search <query>\n"
                    << "  findx ask [--fast|--deep] <question>\n"
-                   << "  findx app\n";
+                   << "  findx app\n"
+                   << "  findx register\n"
+                   << "  findx unregister\n";
         return 1;
     }
 
     std::string command = argv[1];
-    std::filesystem::path db_path = "findx.db";
+    std::filesystem::path db_path = get_db_path();
 
     if (command == "app") {
         return run_app();
+    }
+
+    if (command == "register") {
+        std::error_code ec;
+        if (register_context_menu(ec)) {
+            std::cout << "Context menu entries added. Right-click any folder to use FindX.\n";
+        } else {
+            std::cerr << "Failed to register context menu: " << ec.message() << "\n";
+        }
+        return ec ? 1 : 0;
+    }
+
+    if (command == "unregister") {
+        std::error_code ec;
+        if (unregister_context_menu(ec)) {
+            std::cout << "Context menu entries removed.\n";
+        } else {
+            std::cerr << "Failed to unregister context menu: " << ec.message() << "\n";
+        }
+        return ec ? 1 : 0;
     }
 
     if (argc < 3) {
@@ -482,7 +493,9 @@ int main(int argc, char* argv[]) {
                    << "  findx index <path>\n"
                    << "  findx search <query>\n"
                    << "  findx ask [--fast|--deep] <question>\n"
-                   << "  findx app\n";
+                   << "  findx app\n"
+                   << "  findx register\n"
+                   << "  findx unregister\n";
         return 1;
     }
 
@@ -530,6 +543,8 @@ int main(int argc, char* argv[]) {
                << "  findx index <path>\n"
                << "  findx search <query>\n"
                << "  findx ask [--fast|--deep] <question>\n"
-               << "  findx app\n";
+               << "  findx app\n"
+               << "  findx register\n"
+               << "  findx unregister\n";
     return 1;
 }
